@@ -3,11 +3,7 @@ module.exports = {
         browser: true,
         es2021: true,
     },
-    extends: [
-        'airbnb',
-        'plugin:react/recommended',
-        'plugin:prettier/recommended',
-    ],
+    extends: ['plugin:react/recommended', 'plugin:prettier/recommended'],
     overrides: [
         {
             env: {
@@ -27,6 +23,7 @@ module.exports = {
     rules: {
         'react/react-in-jsx-scope': 0,
         'import/no-extraneous-dependencies': 0,
-        ' @typescript-eslint/no-non-null-assertion': 0,
+        'react/prop-types': 0,
+        'react/jsx-props-no-spreading': 0,
     },
 };

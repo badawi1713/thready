@@ -1,5 +1,7 @@
-function App() {
-    return <div className="bg-red-300 px-2 text-red-200 py-5">App</div>;
-}
+import Register from './pages/register';
+
+const App = () => {
+    return <Register />;
+};
 
 export default App;
