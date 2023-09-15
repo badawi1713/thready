@@ -12,6 +12,7 @@ import {
     HiOutlineEye,
     HiOutlineEyeOff,
 } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 
 const schema = yup.object().shape({
@@ -56,7 +57,7 @@ const Register = () => {
 
     return (
         <section className="flex flex-col lg:grid grid-cols-12 min-h-[100dvh]">
-            <div className="col-span-8 bg-background lg:flex flex-col hidden w-full px-10 py-20">
+            <div className="col-span-8 bg-accent lg:flex flex-col hidden w-full p-8">
                 <div className="flex items-center gap-3">
                     <HiNewspaper size={40} />
                     <Typography variant="heading1" fontWeight="bold">
@@ -76,7 +77,16 @@ const Register = () => {
                     </blockquote>
                 </div>
             </div>
-            <div className="col-span-4 w-full bg-background px-10 py-20 flex-col flex">
+            <div className="col-span-4 w-full bg-background p-8 flex-col flex items-start">
+                <Link className="mb-4" to="/login">
+                    <Button
+                        variant="link"
+                        className="flex items-center  w-auto gap-2 p-0"
+                    >
+                        <HiArrowLeft size={18} />
+                        Go Back
+                    </Button>
+                </Link>
                 <Typography variant="heading1">Sign Up</Typography>
                 <FormProvider {...formMethods}>
                     <form className="flex flex-col w-full gap-4 mt-14">
@@ -262,19 +272,11 @@ const Register = () => {
                         <Button
                             type="button"
                             onClick={handleSave}
-                            className="my-14"
+                            className="my-10"
                         >
                             Register
                         </Button>
                     </form>
-
-                    <Button
-                        variant="link"
-                        className="flex items-center mt-auto mx-auto gap-2"
-                    >
-                        <HiArrowLeft size={18} />
-                        Go Back
-                    </Button>
                 </FormProvider>
             </div>
         </section>

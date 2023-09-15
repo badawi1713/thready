@@ -42,7 +42,7 @@ const Typography = forwardRef(
                 variantClasses = 'text-[0.7rem]';
                 break;
             case 'label':
-                variantClasses = 'text-[0.75rem]';
+                variantClasses = 'text-[0.9rem]';
                 break;
             default:
                 variantClasses = 'text-base';
@@ -72,7 +72,7 @@ const Typography = forwardRef(
 
         switch (color) {
             case 'default':
-                colorClasses = 'text-gray-800';
+                colorClasses = 'text-inherit';
                 break;
             case 'error':
                 colorClasses = 'text-red-500';
@@ -87,11 +87,11 @@ const Typography = forwardRef(
                 colorClasses = 'text-green-500';
                 break;
             default:
-                colorClasses = 'text-gray-800';
+                colorClasses = 'text-inherit';
         }
 
         const classes = cva(
-            `${baseClasses} ${variantClasses} ${fontStyleClasses} ${fontWeightClasses} ${colorClasses} dark:text-white`
+            `${baseClasses} ${variantClasses} ${fontStyleClasses} ${fontWeightClasses} ${colorClasses}`
         );
 
         const headingLevels = {

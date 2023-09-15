@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { HiNewspaper, HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 
 const schema = yup.object().shape({
@@ -37,7 +38,7 @@ const Login = () => {
 
     return (
         <section className="flex flex-col lg:grid grid-cols-12 min-h-[100dvh]">
-            <div className="col-span-8 bg-background lg:flex flex-col hidden w-full px-10 py-20">
+            <div className="col-span-8 bg-accent lg:flex flex-col hidden w-full p-8">
                 <div className="flex items-center gap-3">
                     <HiNewspaper size={40} />
                     <Typography variant="heading1" fontWeight="bold">
@@ -57,7 +58,7 @@ const Login = () => {
                     </blockquote>
                 </div>
             </div>
-            <div className="col-span-4 w-full bg-background px-10 py-20 flex-col flex">
+            <div className="col-span-4 w-full bg-background p-8 flex-col flex">
                 <Typography variant="heading1">Sign In</Typography>
                 <FormProvider {...formMethods}>
                     <form className="flex flex-col w-full gap-4 mt-14">
@@ -150,14 +151,16 @@ const Login = () => {
                             }}
                         />
 
-                        <Button className="my-14">Submit</Button>
+                        <Button className="my-10">Submit</Button>
                     </form>
                 </FormProvider>
                 <div className="flex items-baseline mt-auto mx-auto">
                     <Typography variant="body2">
                         Don&apos;t have an account yet?
                     </Typography>
-                    <Button variant="link">Sign Up</Button>
+                    <Link to="/register">
+                        <Button variant="link">Sign Up</Button>
+                    </Link>
                 </div>
             </div>
         </section>

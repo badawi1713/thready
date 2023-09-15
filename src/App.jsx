@@ -1,7 +1,13 @@
-import Register from './pages/register';
+import RootRouter from './components/shared/root-router';
+import ScrollToTop from './lib/scroll-to-top';
 
 const App = () => {
-    return <Register />;
+    return (
+        <>
+            <ScrollToTop />
+            <RootRouter />
+        </>
+    );
 };
 
 export default App;
