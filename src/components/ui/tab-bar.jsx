@@ -4,9 +4,18 @@ import { Link, useLocation } from 'react-router-dom';
 
 import { Typography } from '@/components/ui/typography';
 import { mainRoutes, screens } from '@/lib/utils';
-import { HiOutlineLogout, HiOutlineMoon, HiOutlineSun } from 'react-icons/hi';
+import { asyncUnsetAuthUser } from '@/store/reducers/auth-user-reducer/action';
+import {
+    HiOutlineLogin,
+    HiOutlineLogout,
+    HiOutlineMoon,
+    HiOutlineSun,
+} from 'react-icons/hi';
+import { useDispatch, useSelector } from 'react-redux';
+import Confirmation from '../shared/confirmation';
 
 const TabBar = () => {
+    const dispatch = useDispatch();
     const { setTheme, theme } = useTheme();
 
     const screenSize = useScreenSize();
@@ -14,6 +23,12 @@ const TabBar = () => {
     const isMobileScreen = width <= screens.md;
 
     const { pathname } = useLocation();
+
+    const authUser = !!useSelector((state) => state?.authUserReducer);
+
+    const handleLogout = () => {
+        dispatch(asyncUnsetAuthUser());
+    };
 
     return (
         isMobileScreen && (
@@ -55,10 +70,27 @@ const TabBar = () => {
                         {theme === 'dark' ? 'Light' : 'Dark'} Mode
                     </Typography>
                 </button>
-                <button className="flex flex-col items-center py-3">
-                    <HiOutlineLogout size={24} />
-                    <Typography variant="caption">Logout</Typography>
-                </button>
+                {authUser ? (
+                    <Confirmation
+                        title="Confirm to logout?"
+                        description="Logging out will end your current session, and you'll need to sign in again to access your account."
+                        handleAction={handleLogout}
+                        actionVariant="destructive"
+                    >
+                        <button className="flex flex-col items-center py-3">
+                            <HiOutlineLogout size={24} />
+                            <Typography variant="caption">Logout</Typography>
+                        </button>
+                    </Confirmation>
+                ) : (
+                    <Link
+                        to="/login"
+                        className="flex flex-col items-center py-3"
+                    >
+                        <HiOutlineLogin size={24} />
+                        <Typography variant="caption">Login</Typography>
+                    </Link>
+                )}
             </div>
         )
     );

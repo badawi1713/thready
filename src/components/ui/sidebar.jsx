@@ -1,28 +1,33 @@
 import { useTheme } from '@/context/theme-context/ThemeContext';
 import { mainRoutes } from '@/lib/utils';
+import { asyncUnsetAuthUser } from '@/store/reducers/auth-user-reducer/action';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
     HiNewspaper,
+    HiOutlineLogin,
     HiOutlineLogout,
     HiOutlineMoon,
     HiOutlineSun,
 } from 'react-icons/hi';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import Confirmation from '../shared/confirmation';
 import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
 import { Typography } from './typography';
 
 const Sidebar = () => {
+    const dispatch = useDispatch();
     const { setTheme, theme } = useTheme();
     const { pathname } = useLocation();
     const isMounted = useRef(true);
     const navigation = useNavigate();
 
+    const authUser = !!useSelector((state) => state?.authUserReducer);
+
     const [activeTab, setActiveTab] = useState(pathname);
 
     const [tabBorderHeight, setTabBorderHeight] = useState(0);
-    const [tabBorderTop, setTabBorderTop] = useState(
-        pathname === '/' ? 80 : 0
-    );
+    const [tabBorderTop, setTabBorderTop] = useState(pathname === '/' ? 80 : 0);
 
     const tabsRef = useRef([pathname]);
 
@@ -46,6 +51,10 @@ const Sidebar = () => {
 
         return () => window.removeEventListener('resize', setTabPosition);
     }, [setTabPosition]);
+
+    const handleLogout = () => {
+        dispatch(asyncUnsetAuthUser());
+    };
 
     return (
         <aside className=" max-w-[160px] w-full sticky top-0 max-h-[100dvh] border-r  flex flex-col gap-10">
@@ -125,16 +134,36 @@ const Sidebar = () => {
                         {theme === 'dark' ? 'Light' : 'Dark'} Mode
                     </TooltipContent>
                 </Tooltip>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <button className="mt-auto">
-                            <div className="h-10 w-10 mx-auto rounded-sm aspect-square flex justify-start items-center mt-auto">
-                                <HiOutlineLogout size={32} />
-                            </div>
-                        </button>
-                    </TooltipTrigger>
-                    <TooltipContent>Sign Out</TooltipContent>
-                </Tooltip>
+                {authUser ? (
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Confirmation
+                                title="Confirm to logout?"
+                                description="Logging out will end your current session, and you'll need to sign in again to access your account."
+                                handleAction={handleLogout}
+                                actionVariant="destructive"
+                            >
+                                <button className="mt-auto">
+                                    <div className="h-10 w-10 mx-auto rounded-sm aspect-square flex justify-start items-center mt-auto">
+                                        <HiOutlineLogout size={32} />
+                                    </div>
+                                </button>
+                            </Confirmation>
+                        </TooltipTrigger>
+                        <TooltipContent>Logout</TooltipContent>
+                    </Tooltip>
+                ) : (
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Link to="/login" className="mt-auto">
+                                <div className="h-10 w-10 mx-auto rounded-sm aspect-square flex justify-start items-center mt-auto">
+                                    <HiOutlineLogin size={32} />
+                                </div>
+                            </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>Login</TooltipContent>
+                    </Tooltip>
+                )}
             </nav>
         </aside>
     );

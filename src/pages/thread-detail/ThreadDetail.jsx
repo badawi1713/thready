@@ -23,14 +23,15 @@ import {
     HiOutlineThumbDown,
     HiOutlineThumbUp,
 } from 'react-icons/hi';
+import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
 const ThreadDetail = () => {
     const screenSize = useScreenSize();
     const { width } = screenSize;
     const isMobileScreen = width <= screens.md;
-
     const navigation = useNavigate();
+    const authUser = !!useSelector((state) => state?.authUserReducer);
 
     const handleGoBack = () => {
         navigation('/');
@@ -106,32 +107,34 @@ const ThreadDetail = () => {
                     </Card>
                 </section>
                 <Separator />
-                <section className="py-6 px-8 ">
-                    <Card>
-                        <CardHeader>
-                            <div className="flex items-center gap-3">
-                                <Avatar>
-                                    <AvatarImage />
-                                    <AvatarFallback>DB</AvatarFallback>
-                                </Avatar>
+                {authUser && (
+                    <section className="py-6 px-8 border-b">
+                        <Card>
+                            <CardHeader>
+                                <div className="flex items-center gap-3">
+                                    <Avatar>
+                                        <AvatarImage />
+                                        <AvatarFallback>DB</AvatarFallback>
+                                    </Avatar>
 
-                                <Typography variant="body1">
-                                    Replying to @_dbadawi
-                                </Typography>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <form>
-                                <Textarea placeholder="Post your reply" />
-                            </form>
-                        </CardContent>
-                        <CardFooter className="flex justify-end">
-                            <Button>Reply</Button>
-                        </CardFooter>
-                    </Card>
-                </section>
-                <Separator />
-                <section className="py-6 px-8 flex flex-col gap-10">
+                                    <Typography variant="body1">
+                                        Replying to @_dbadawi
+                                    </Typography>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <form>
+                                    <Textarea placeholder="Post your reply" />
+                                </form>
+                            </CardContent>
+                            <CardFooter className="flex justify-end">
+                                <Button>Reply</Button>
+                            </CardFooter>
+                        </Card>
+                    </section>
+                )}
+                <section className="py-6 px-8 flex flex-col gap-4">
+                    <Typography variant="body1">Comments</Typography>
                     <Card>
                         <CardHeader>
                             <div className="flex items-center gap-2 flex-wrap">
@@ -192,21 +195,60 @@ const ThreadDetail = () => {
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <Link
                                             to="/?category=redux"
-                                            className={badgeVariants('default')}
+                                            className={badgeVariants({
+                                                variant: 'default',
+                                            })}
                                         >
                                             #redux
                                         </Link>
-                                        <Badge variant="outline">#ramen</Badge>
-                                        <Badge variant="outline">
-                                            #slice_of_life
-                                        </Badge>
-                                        <Badge variant="outline">#gunpla</Badge>
-                                        <Badge variant="outline">
-                                            #how_i_met_your_mother
-                                        </Badge>
-                                        <Badge variant="outline">
-                                            #how_to_train_your_dragapult
-                                        </Badge>
+                                        <Link
+                                            to="/?category=ramen"
+                                            className={badgeVariants({
+                                                variant: 'outline',
+                                            })}
+                                        >
+                                            #ramen
+                                        </Link>
+                                        <Link
+                                            to="/?category=travel"
+                                            className={badgeVariants({
+                                                variant: 'outline',
+                                            })}
+                                        >
+                                            #travel
+                                        </Link>
+                                        <Link
+                                            to="/?category=pokemon"
+                                            className={badgeVariants({
+                                                variant: 'outline',
+                                            })}
+                                        >
+                                            #pokemon
+                                        </Link>
+                                        <Link
+                                            to="/?category=breatofthewild"
+                                            className={badgeVariants({
+                                                variant: 'outline',
+                                            })}
+                                        >
+                                            #breatofthewild
+                                        </Link>
+                                        <Link
+                                            to="/?category=surabaya"
+                                            className={badgeVariants({
+                                                variant: 'outline',
+                                            })}
+                                        >
+                                            #surabaya
+                                        </Link>
+                                        <Link
+                                            to="/?category=sky"
+                                            className={badgeVariants({
+                                                variant: 'outline',
+                                            })}
+                                        >
+                                            #sky
+                                        </Link>
                                     </div>
                                 </CardContent>
                             </Card>

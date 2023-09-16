@@ -3,6 +3,8 @@ import { FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Typography } from '@/components/ui/typography';
+import { useToast } from '@/hooks/useToast';
+import services from '@/lib/services';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
@@ -12,7 +14,7 @@ import {
     HiOutlineEye,
     HiOutlineEyeOff,
 } from 'react-icons/hi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
 const schema = yup.object().shape({
@@ -24,8 +26,7 @@ const schema = yup.object().shape({
     password: yup
         .string()
         .required('Password is required')
-        .min(8, 'Your password is too short'),
-
+        .min(3, 'Your password is too short'),
     confirmPassword: yup
         .string()
         .oneOf([yup.ref('password')], 'Your passwords does not match')
@@ -33,8 +34,11 @@ const schema = yup.object().shape({
 });
 
 const Register = () => {
+    const { toast } = useToast();
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const formMethods = useForm({
         mode: 'onChange',
@@ -47,12 +51,26 @@ const Register = () => {
         resolver: yupResolver(schema),
     });
 
-    const { control, reset, formState, handleSubmit } = formMethods;
+    const { control, formState, handleSubmit } = formMethods;
 
     const { errors } = formState;
 
-    const handleSave = handleSubmit((formData) => {
-        console.log(formData);
+    const handleSave = handleSubmit(async (formData) => {
+        setLoading(true);
+        const payload = {
+            email: formData.email,
+            name: formData.name,
+            password: formData.password,
+        };
+        const response = await services.register(payload);
+        if (response) {
+            toast({
+                title: 'Your account has been registered',
+                description: 'Please login with your account to continue',
+            });
+            navigate('/login', { replace: true });
+        }
+        setLoading(false);
     });
 
     return (
@@ -87,9 +105,12 @@ const Register = () => {
                         Go Back
                     </Button>
                 </Link>
-                <Typography variant="heading1">Sign Up</Typography>
+                <Typography variant="heading1">Register</Typography>
                 <FormProvider {...formMethods}>
-                    <form className="flex flex-col w-full gap-4 mt-14">
+                    <form
+                        onSubmit={handleSave}
+                        className="flex flex-col w-full gap-4 mt-14"
+                    >
                         <Controller
                             name="name"
                             control={control}
@@ -104,7 +125,6 @@ const Register = () => {
                                             type="text"
                                             id="name"
                                             placeholder="Enter your name"
-                                            error={!!errors?.name}
                                             onChange={(e) =>
                                                 onChange(e.target.value)
                                             }
@@ -132,8 +152,7 @@ const Register = () => {
                                             {...field}
                                             type="email"
                                             id="email"
-                                            placeholder="john.doe@gmail.com"
-                                            error={!!errors?.email}
+                                            placeholder="Enter your email"
                                             onChange={(e) =>
                                                 onChange(e.target.value)
                                             }
@@ -169,7 +188,6 @@ const Register = () => {
                                             }
                                             id="password"
                                             placeholder="Enter your password"
-                                            error={!!errors?.password}
                                             icon={
                                                 <button
                                                     type="button"
@@ -269,12 +287,8 @@ const Register = () => {
                             }}
                         />
 
-                        <Button
-                            type="button"
-                            onClick={handleSave}
-                            className="my-10"
-                        >
-                            Register
+                        <Button disabled={loading} className="my-10">
+                            {loading ? 'Processing' : 'Register'}
                         </Button>
                     </form>
                 </FormProvider>

@@ -3,11 +3,18 @@ import { FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Typography } from '@/components/ui/typography';
+import { asyncSetAuthUser } from '@/store/reducers/auth-user-reducer/action';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { HiNewspaper, HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
-import { Link } from 'react-router-dom';
+import {
+    HiArrowLeft,
+    HiNewspaper,
+    HiOutlineEye,
+    HiOutlineEyeOff,
+} from 'react-icons/hi';
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
 const schema = yup.object().shape({
@@ -19,6 +26,9 @@ const schema = yup.object().shape({
 });
 
 const Login = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const formMethods = useForm({
@@ -32,9 +42,22 @@ const Login = () => {
         resolver: yupResolver(schema),
     });
 
-    const { control, reset, formState, handleSubmit } = formMethods;
+    const { control, formState, handleSubmit } = formMethods;
 
     const { errors } = formState;
+
+    const handleSave = handleSubmit(async (formData) => {
+        setLoading(true);
+        const payload = {
+            email: formData.email,
+            password: formData.password,
+        };
+        const response = await dispatch(asyncSetAuthUser(payload));
+        if (response) {
+            navigate('/', { replace: true });
+        }
+        setLoading(false);
+    });
 
     return (
         <section className="flex flex-col lg:grid grid-cols-12 min-h-[100dvh]">
@@ -58,10 +81,22 @@ const Login = () => {
                     </blockquote>
                 </div>
             </div>
-            <div className="col-span-4 w-full bg-background p-8 flex-col flex">
-                <Typography variant="heading1">Sign In</Typography>
+            <div className="col-span-4 w-full bg-background p-8 flex-col flex items-start">
+                <Link className="mb-4" to="/">
+                    <Button
+                        variant="link"
+                        className="flex items-center  w-auto gap-2 p-0"
+                    >
+                        <HiArrowLeft size={18} />
+                        Home
+                    </Button>
+                </Link>
+                <Typography variant="heading1">Login</Typography>
                 <FormProvider {...formMethods}>
-                    <form className="flex flex-col w-full gap-4 mt-14">
+                    <form
+                        onSubmit={handleSave}
+                        className="flex flex-col w-full gap-4 mt-14"
+                    >
                         <Controller
                             name="email"
                             control={control}
@@ -75,12 +110,11 @@ const Login = () => {
                                             {...field}
                                             type="email"
                                             id="email"
-                                            placeholder="john.doe@gmail.com"
+                                            placeholder="Enter your email"
                                             onChange={(e) =>
                                                 onChange(e.target.value)
                                             }
                                             value={value}
-                                            error={!!errors?.email}
                                         />
                                         {errors?.email?.message && (
                                             <FormMessage>
@@ -112,7 +146,6 @@ const Login = () => {
                                             }
                                             id="password"
                                             placeholder="Enter your password"
-                                            error={!!errors?.password}
                                             icon={
                                                 <button
                                                     type="button"
@@ -151,7 +184,9 @@ const Login = () => {
                             }}
                         />
 
-                        <Button className="my-10">Submit</Button>
+                        <Button disabled={loading} className="my-10">
+                            {loading ? 'Processing' : 'Submit'}
+                        </Button>
                     </form>
                 </FormProvider>
                 <div className="flex items-baseline mt-auto mx-auto">
@@ -159,7 +194,7 @@ const Login = () => {
                         Don&apos;t have an account yet?
                     </Typography>
                     <Link to="/register">
-                        <Button variant="link">Sign Up</Button>
+                        <Button variant="link">Register</Button>
                     </Link>
                 </div>
             </div>

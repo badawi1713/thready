@@ -7,6 +7,8 @@ import {
 } from 'react-icons/hi';
 import { twMerge } from 'tailwind-merge';
 
+export const BASE_URL = 'https://forum-api.dicoding.dev/v1';
+
 export const screens = {
     sm: 640,
     md: 768,
