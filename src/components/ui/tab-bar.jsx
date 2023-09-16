@@ -1,8 +1,9 @@
 import { useTheme } from '@/context/theme-context/ThemeContext';
 import useScreenSize from '@/hooks/useScreenSize';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { Typography } from '@/components/ui/typography';
+import { useToast } from '@/hooks/useToast';
 import { mainRoutes, screens } from '@/lib/utils';
 import { asyncUnsetAuthUser } from '@/store/reducers/auth-user-reducer/action';
 import {
@@ -17,6 +18,8 @@ import Confirmation from '../shared/confirmation';
 const TabBar = () => {
     const dispatch = useDispatch();
     const { setTheme, theme } = useTheme();
+    const { toast } = useToast();
+    const navigation = useNavigate();
 
     const screenSize = useScreenSize();
     const { width } = screenSize;
@@ -28,6 +31,12 @@ const TabBar = () => {
 
     const handleLogout = () => {
         dispatch(asyncUnsetAuthUser());
+        navigation('/');
+        toast({
+            title: 'Logout Successful',
+            description:
+                'You have been successfully logged out of your account. ',
+        });
     };
 
     return (

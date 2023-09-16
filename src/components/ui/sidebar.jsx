@@ -1,4 +1,5 @@
 import { useTheme } from '@/context/theme-context/ThemeContext';
+import { useToast } from '@/hooks/useToast';
 import { mainRoutes } from '@/lib/utils';
 import { asyncUnsetAuthUser } from '@/store/reducers/auth-user-reducer/action';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -20,6 +21,7 @@ const Sidebar = () => {
     const { setTheme, theme } = useTheme();
     const { pathname } = useLocation();
     const isMounted = useRef(true);
+    const { toast } = useToast();
     const navigation = useNavigate();
 
     const authUser = !!useSelector((state) => state?.authUserReducer);
@@ -54,6 +56,12 @@ const Sidebar = () => {
 
     const handleLogout = () => {
         dispatch(asyncUnsetAuthUser());
+        navigation('/');
+        toast({
+            title: 'Logout Successful',
+            description:
+                'You have been successfully logged out of your account. ',
+        });
     };
 
     return (
