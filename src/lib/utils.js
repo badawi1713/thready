@@ -55,7 +55,7 @@ for (let i = 1; i <= 100; i++) {
 export const leaderboardData = userList.sort((a, b) => b.score - a.score);
 
 export function getInitials(name) {
-    const words = name.split(' ');
+    const words = name?.split(' ');
 
     if (words.length === 0) {
         return '';

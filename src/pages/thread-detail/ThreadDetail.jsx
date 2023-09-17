@@ -35,7 +35,7 @@ function ThreadDetail() {
     const { width } = screenSize;
     const isMobileScreen = width <= screens.md;
     const navigation = useNavigate();
-    const authUser = !!useSelector((state) => state?.authUserReducer);
+    const authUser = useSelector((state) => state?.authUserReducer);
 
     const handleGoBack = () => {
         navigation('/');
