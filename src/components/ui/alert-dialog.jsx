@@ -1,16 +1,16 @@
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog';
 import * as React from 'react';
 
-import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { buttonVariants } from './button';
 
 const AlertDialog = AlertDialogPrimitive.Root;
 
 const AlertDialogTrigger = AlertDialogPrimitive.Trigger;
 
-const AlertDialogPortal = ({ className, ...props }) => (
-    <AlertDialogPrimitive.Portal className={cn(className)} {...props} />
-);
+function AlertDialogPortal({ className, ...props }) {
+    return <AlertDialogPrimitive.Portal className={cn(className)} {...props} />;
+}
 AlertDialogPortal.displayName = AlertDialogPrimitive.Portal.displayName;
 
 const AlertDialogOverlay = React.forwardRef(
@@ -42,26 +42,30 @@ const AlertDialogContent = React.forwardRef(({ className, ...props }, ref) => (
 ));
 AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName;
 
-const AlertDialogHeader = ({ className, ...props }) => (
-    <div
-        className={cn(
-            'flex flex-col space-y-2 text-center sm:text-left',
-            className
-        )}
-        {...props}
-    />
-);
+function AlertDialogHeader({ className, ...props }) {
+    return (
+        <div
+            className={cn(
+                'flex flex-col space-y-2 text-center sm:text-left',
+                className
+            )}
+            {...props}
+        />
+    );
+}
 AlertDialogHeader.displayName = 'AlertDialogHeader';
 
-const AlertDialogFooter = ({ className, ...props }) => (
-    <div
-        className={cn(
-            'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
-            className
-        )}
-        {...props}
-    />
-);
+function AlertDialogFooter({ className, ...props }) {
+    return (
+        <div
+            className={cn(
+                'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
+                className
+            )}
+            {...props}
+        />
+    );
+}
 AlertDialogFooter.displayName = 'AlertDialogFooter';
 
 const AlertDialogTitle = React.forwardRef(({ className, ...props }, ref) => (

@@ -5,7 +5,7 @@ import { Toaster } from './components/ui/toaster';
 import ScrollToTop from './lib/scroll-to-top';
 import { asyncPreloadProcess } from './store/reducers/is-preload-reducer/action';
 
-const App = () => {
+function App() {
     const dispatch = useDispatch();
     const isMounted = useRef(true);
 
@@ -27,6 +27,6 @@ const App = () => {
             <Toaster />
         </>
     );
-};
+}
 
 export default App;

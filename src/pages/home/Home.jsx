@@ -1,17 +1,20 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge, badgeVariants } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+    Badge,
+    Button,
     Card,
     CardContent,
     CardFooter,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import Sidebar from '@/components/ui/sidebar';
-import TabBar from '@/components/ui/tab-bar';
-import { Textarea } from '@/components/ui/textarea';
-import { Typography } from '@/components/ui/typography';
+    Textarea,
+    Typography,
+    badgeVariants,
+} from '@/components/ui';
+import Sidebar from '@/components/shared/sidebar.jsx';
+import TabBar from '@/components/shared/tab-bar.jsx';
 import useScreenSize from '@/hooks/useScreenSize';
 import { getInitials, screens } from '@/lib/utils';
 import {
@@ -24,7 +27,7 @@ import {
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Home = () => {
+function Home() {
     const screenSize = useScreenSize();
     const { width } = screenSize;
     const isMobileScreen = width <= screens.md;
@@ -35,8 +38,6 @@ const Home = () => {
     const handleNavigate = (id) => {
         navigation(`/thread/${id}`);
     };
-
-    console.log(authUser);
 
     return (
         <div className="flex items-stretch min-h-[100dvh] lg:container relative">
@@ -120,8 +121,10 @@ const Home = () => {
                             <CardHeader>
                                 <div className="flex items-center gap-3">
                                     <Avatar>
-                                        <AvatarImage />
-                                        <AvatarFallback>DB</AvatarFallback>
+                                        <AvatarImage src={authUser?.avatar} />
+                                        <AvatarFallback>
+                                            {getInitials(authUser?.name)}
+                                        </AvatarFallback>
                                     </Avatar>
 
                                     <Typography variant="body1">
@@ -316,6 +319,6 @@ const Home = () => {
             <TabBar />
         </div>
     );
-};
+}
 
 export default Home;

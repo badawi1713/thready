@@ -1,7 +1,4 @@
-import { useTheme } from '@/context/theme-context/ThemeContext';
-import { useToast } from '@/hooks/useToast';
-import { mainRoutes } from '@/lib/utils';
-import { asyncUnsetAuthUser } from '@/store/reducers/auth-user-reducer/action';
+/* eslint-disable no-return-assign */
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
     HiNewspaper,
@@ -12,11 +9,15 @@ import {
 } from 'react-icons/hi';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import Confirmation from '../shared/confirmation';
-import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
-import { Typography } from './typography';
+import { useToast } from '@/hooks/useToast';
+import { mainRoutes } from '@/lib/utils';
+import { asyncUnsetAuthUser } from '@/store/reducers/auth-user-reducer/action';
+import Confirmation from './confirmation';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { Typography } from '../ui/typography';
+import { useTheme } from '../../context/theme-context/ThemeContext';
 
-const Sidebar = () => {
+function Sidebar() {
     const dispatch = useDispatch();
     const { setTheme, theme } = useTheme();
     const { pathname } = useLocation();
@@ -113,9 +114,7 @@ const Sidebar = () => {
                         top: tabBorderTop,
                         height: tabBorderHeight,
                     }}
-                    className={
-                        'absolute right-0 block w-1 bg-primary transition-all ease-out duration-300'
-                    }
+                    className="absolute right-0 block w-1 bg-primary transition-all ease-out duration-300"
                 />
 
                 <Tooltip>
@@ -175,6 +174,6 @@ const Sidebar = () => {
             </nav>
         </aside>
     );
-};
+}
 
 export default memo(Sidebar);

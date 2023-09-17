@@ -1,10 +1,3 @@
-import { Button } from '@/components/ui/button';
-import { FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Typography } from '@/components/ui/typography';
-import { useToast } from '@/hooks/useToast';
-import services from '@/lib/services';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
@@ -16,6 +9,9 @@ import {
 } from 'react-icons/hi';
 import { Link, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
+import services from '@/lib/services';
+import { useToast } from '@/hooks/useToast';
+import { Button, FormMessage, Input, Label, Typography } from '@/components/ui';
 
 const schema = yup.object().shape({
     name: yup.string().required('Name is required'),
@@ -33,7 +29,7 @@ const schema = yup.object().shape({
         .required('Confirm password is required'),
 });
 
-const Register = () => {
+function Register() {
     const { toast } = useToast();
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
@@ -295,6 +291,6 @@ const Register = () => {
             </div>
         </section>
     );
-};
+}
 
 export default Register;

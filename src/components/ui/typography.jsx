@@ -107,7 +107,9 @@ const Typography = forwardRef(
         const Text = headingLevels[variant] || 'p';
 
         return (
-            <Text className={cn(classes(), props.className)}>{children}</Text>
+            <Text ref={ref} className={cn(classes(), props.className)}>
+                {children}
+            </Text>
         );
     }
 );

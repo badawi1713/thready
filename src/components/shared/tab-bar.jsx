@@ -1,11 +1,4 @@
-import { useTheme } from '@/context/theme-context/ThemeContext';
-import useScreenSize from '@/hooks/useScreenSize';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-
-import { Typography } from '@/components/ui/typography';
-import { useToast } from '@/hooks/useToast';
-import { mainRoutes, screens } from '@/lib/utils';
-import { asyncUnsetAuthUser } from '@/store/reducers/auth-user-reducer/action';
 import {
     HiOutlineLogin,
     HiOutlineLogout,
@@ -13,9 +6,16 @@ import {
     HiOutlineSun,
 } from 'react-icons/hi';
 import { useDispatch, useSelector } from 'react-redux';
-import Confirmation from '../shared/confirmation';
+import useScreenSize from '@/hooks/useScreenSize';
 
-const TabBar = () => {
+import { useToast } from '@/hooks/useToast';
+import { mainRoutes, screens } from '@/lib/utils';
+import { asyncUnsetAuthUser } from '@/store/reducers/auth-user-reducer/action';
+import { Typography } from '../ui/typography';
+import { useTheme } from '../../context/theme-context/ThemeContext';
+import Confirmation from './confirmation';
+
+function TabBar() {
     const dispatch = useDispatch();
     const { setTheme, theme } = useTheme();
     const { toast } = useToast();
@@ -42,24 +42,20 @@ const TabBar = () => {
     return (
         isMobileScreen && (
             <div className="flex items-baseline w-full fixed border-t shadow-sm dark:bg-slate-900 bg-white bottom-0 left-0 justify-around px-2">
-                {mainRoutes?.map((route) => {
-                    return (
-                        <Link
-                            key={route.id}
-                            to={route.url}
-                            className="flex flex-col items-center py-3"
-                        >
-                            {pathname === route?.url ? (
-                                <route.activeIcon size={24} />
-                            ) : (
-                                <route.icon size={24} />
-                            )}
-                            <Typography variant="caption">
-                                {route.name}
-                            </Typography>
-                        </Link>
-                    );
-                })}
+                {mainRoutes?.map((route) => (
+                    <Link
+                        key={route.id}
+                        to={route.url}
+                        className="flex flex-col items-center py-3"
+                    >
+                        {pathname === route?.url ? (
+                            <route.activeIcon size={24} />
+                        ) : (
+                            <route.icon size={24} />
+                        )}
+                        <Typography variant="caption">{route.name}</Typography>
+                    </Link>
+                ))}
 
                 <button
                     className="flex flex-col items-center relative py-3"
@@ -103,6 +99,6 @@ const TabBar = () => {
             </div>
         )
     );
-};
+}
 
 export default TabBar;

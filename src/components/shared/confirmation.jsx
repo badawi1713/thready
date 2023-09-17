@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -8,24 +9,19 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { forwardRef } from 'react';
+} from '@/components/ui';
 import { buttonVariants } from '../ui/button';
 
 const Confirmation = forwardRef(
-    (
-        {
-            title = 'Confirmation dialog?',
-            description = 'This is a default confirmation dialog description.',
-            handleAction = () => console.log('Action button'),
-            cancelText = 'Cancel',
-            actionText = 'Confirm',
-            actionVariant = 'default',
-            children,
-            ...props
-        },
-        ref
-    ) => {
+    ({
+        title = 'Confirmation dialog?',
+        description = 'This is a default confirmation dialog description.',
+        handleAction = () => true,
+        cancelText = 'Cancel',
+        actionText = 'Confirm',
+        actionVariant = 'default',
+        children,
+    }) => {
         return (
             <AlertDialog>
                 <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>

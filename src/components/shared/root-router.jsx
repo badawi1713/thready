@@ -5,7 +5,7 @@ import Register from '@/pages/register';
 import ThreadDetail from '@/pages/thread-detail';
 import { Route, Routes } from 'react-router-dom';
 
-const RootRouter = () => {
+function RootRouter() {
     return (
         <Routes>
             <Route path="/" element={<Home />} />
@@ -15,6 +15,6 @@ const RootRouter = () => {
             <Route path="/register" element={<Register />} />
         </Routes>
     );
-};
+}
 
 export default RootRouter;

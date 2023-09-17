@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-constructed-context-values */
 import { createContext, useContext, useEffect, useState } from 'react';
 
 const initialState = {
@@ -38,9 +39,9 @@ export function ThemeProvider({
 
     const value = {
         theme,
-        setTheme: (theme) => {
-            localStorage.setItem(storageKey, theme);
-            setTheme(theme);
+        setTheme: (newTheme) => {
+            localStorage.setItem(storageKey, newTheme);
+            setTheme(newTheme);
         },
     };
 

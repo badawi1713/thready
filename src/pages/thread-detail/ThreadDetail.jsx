@@ -1,20 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge, badgeVariants } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import Sidebar from '@/components/ui/sidebar';
-import TabBar from '@/components/ui/tab-bar';
-import { Textarea } from '@/components/ui/textarea';
-import { Typography } from '@/components/ui/typography';
-import useScreenSize from '@/hooks/useScreenSize';
-import { screens } from '@/lib/utils';
 import {
     HiArrowLeft,
     HiHashtag,
@@ -25,8 +8,29 @@ import {
 } from 'react-icons/hi';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import useScreenSize from '@/hooks/useScreenSize';
+import { getInitials, screens } from '@/lib/utils';
 
-const ThreadDetail = () => {
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+    Button,
+    Textarea,
+    Typography,
+    Separator,
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+    Badge,
+    badgeVariants,
+} from '@/components/ui';
+import TabBar from '@/components/shared/tab-bar.jsx';
+import Sidebar from '@/components/shared/sidebar.jsx';
+
+function ThreadDetail() {
     const screenSize = useScreenSize();
     const { width } = screenSize;
     const isMobileScreen = width <= screens.md;
@@ -113,8 +117,10 @@ const ThreadDetail = () => {
                             <CardHeader>
                                 <div className="flex items-center gap-3">
                                     <Avatar>
-                                        <AvatarImage />
-                                        <AvatarFallback>DB</AvatarFallback>
+                                        <AvatarImage src={authUser?.avatar} />
+                                        <AvatarFallback>
+                                            {getInitials(authUser?.name)}
+                                        </AvatarFallback>
                                     </Avatar>
 
                                     <Typography variant="body1">
@@ -184,81 +190,79 @@ const ThreadDetail = () => {
                     {isMobileScreen ? (
                         <div className="rounded-sm dark:bg-slate-800 bg-slate-100 h-40 w-12 lg:w-80" />
                     ) : (
-                        <>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-1 font-normal">
-                                        <HiHashtag /> Trending
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        <Link
-                                            to="/?category=redux"
-                                            className={badgeVariants({
-                                                variant: 'default',
-                                            })}
-                                        >
-                                            #redux
-                                        </Link>
-                                        <Link
-                                            to="/?category=ramen"
-                                            className={badgeVariants({
-                                                variant: 'outline',
-                                            })}
-                                        >
-                                            #ramen
-                                        </Link>
-                                        <Link
-                                            to="/?category=travel"
-                                            className={badgeVariants({
-                                                variant: 'outline',
-                                            })}
-                                        >
-                                            #travel
-                                        </Link>
-                                        <Link
-                                            to="/?category=pokemon"
-                                            className={badgeVariants({
-                                                variant: 'outline',
-                                            })}
-                                        >
-                                            #pokemon
-                                        </Link>
-                                        <Link
-                                            to="/?category=breatofthewild"
-                                            className={badgeVariants({
-                                                variant: 'outline',
-                                            })}
-                                        >
-                                            #breatofthewild
-                                        </Link>
-                                        <Link
-                                            to="/?category=surabaya"
-                                            className={badgeVariants({
-                                                variant: 'outline',
-                                            })}
-                                        >
-                                            #surabaya
-                                        </Link>
-                                        <Link
-                                            to="/?category=sky"
-                                            className={badgeVariants({
-                                                variant: 'outline',
-                                            })}
-                                        >
-                                            #sky
-                                        </Link>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-1 font-normal">
+                                    <HiHashtag /> Trending
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <Link
+                                        to="/?category=redux"
+                                        className={badgeVariants({
+                                            variant: 'default',
+                                        })}
+                                    >
+                                        #redux
+                                    </Link>
+                                    <Link
+                                        to="/?category=ramen"
+                                        className={badgeVariants({
+                                            variant: 'outline',
+                                        })}
+                                    >
+                                        #ramen
+                                    </Link>
+                                    <Link
+                                        to="/?category=travel"
+                                        className={badgeVariants({
+                                            variant: 'outline',
+                                        })}
+                                    >
+                                        #travel
+                                    </Link>
+                                    <Link
+                                        to="/?category=pokemon"
+                                        className={badgeVariants({
+                                            variant: 'outline',
+                                        })}
+                                    >
+                                        #pokemon
+                                    </Link>
+                                    <Link
+                                        to="/?category=breatofthewild"
+                                        className={badgeVariants({
+                                            variant: 'outline',
+                                        })}
+                                    >
+                                        #breatofthewild
+                                    </Link>
+                                    <Link
+                                        to="/?category=surabaya"
+                                        className={badgeVariants({
+                                            variant: 'outline',
+                                        })}
+                                    >
+                                        #surabaya
+                                    </Link>
+                                    <Link
+                                        to="/?category=sky"
+                                        className={badgeVariants({
+                                            variant: 'outline',
+                                        })}
+                                    >
+                                        #sky
+                                    </Link>
+                                </div>
+                            </CardContent>
+                        </Card>
                     )}
                 </div>
             </aside>
             <TabBar />
         </div>
     );
-};
+}
 
 export default ThreadDetail;

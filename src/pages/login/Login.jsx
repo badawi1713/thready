@@ -1,8 +1,3 @@
-import { Button } from '@/components/ui/button';
-import { FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Typography } from '@/components/ui/typography';
 import { asyncSetAuthUser } from '@/store/reducers/auth-user-reducer/action';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
@@ -16,6 +11,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
+import { Button, FormMessage, Input, Label, Typography } from '@/components/ui';
 
 const schema = yup.object().shape({
     email: yup
@@ -25,7 +21,7 @@ const schema = yup.object().shape({
     password: yup.string().required('Password is required'),
 });
 
-const Login = () => {
+function Login() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -200,6 +196,6 @@ const Login = () => {
             </div>
         </section>
     );
-};
+}
 
 export default Login;

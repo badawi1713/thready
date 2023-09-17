@@ -1,5 +1,5 @@
-import { toast } from '@/hooks/useToast';
 import axios from 'axios';
+import { toast } from '@/hooks/useToast';
 
 function putAccessToken(token) {
     localStorage.setItem('accessToken', token);
@@ -18,7 +18,7 @@ async function register({ email, name, password }) {
     try {
         const response = await axios.post('/register', data);
 
-        const { status, message } = response?.data;
+        const { status, message } = response.data;
 
         if (status !== 'success') {
             throw new Error(message);
@@ -43,7 +43,7 @@ async function login({ email, password }) {
     try {
         const response = await axios.post('/login', data);
 
-        const { status, message } = response?.data;
+        const { status, message } = response.data;
 
         if (status !== 'success') {
             throw new Error(message);
@@ -65,7 +65,7 @@ async function login({ email, password }) {
 async function getOwnProfile() {
     try {
         const response = await axios.get('/users/me');
-        const { status, message } = response?.data;
+        const { status, message } = response.data;
         if (status !== 'success') {
             throw new Error(message);
         }

@@ -1,9 +1,12 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import Sidebar from '@/components/ui/sidebar';
-import TabBar from '@/components/ui/tab-bar';
 import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    Separator,
     Table,
     TableBody,
     TableCaption,
@@ -11,12 +14,14 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from '@/components/ui/table';
-import { Typography } from '@/components/ui/typography';
+    Typography,
+} from '@/components/ui';
+import TabBar from '@/components/shared/tab-bar.jsx';
+import Sidebar from '@/components/shared/sidebar.jsx';
 import useScreenSize from '@/hooks/useScreenSize';
 import { leaderboardData, screens } from '@/lib/utils';
 
-const Leaderboard = () => {
+function Leaderboard() {
     const screenSize = useScreenSize();
     const { width } = screenSize;
     const isMobileScreen = width <= screens.md;
@@ -71,44 +76,38 @@ const Leaderboard = () => {
                     {isMobileScreen ? (
                         <div className="rounded-sm dark:bg-slate-800 bg-slate-100 h-40 w-12 lg:w-80" />
                     ) : (
-                        <>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="font-normal">
-                                        Congratulation!
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="flex items-center justify-between space-x-4">
-                                        <div className="flex items-center space-x-4">
-                                            <Avatar>
-                                                <AvatarImage />
-                                                <AvatarFallback>
-                                                    1st
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div>
-                                                <p className="text-lg font-medium leading-none">
-                                                    {leaderboardData[0].name ||
-                                                        '-'}
-                                                </p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    With score:{' '}
-                                                    {leaderboardData[0].score ||
-                                                        0}
-                                                </p>
-                                            </div>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="font-normal">
+                                    Congratulation!
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex items-center justify-between space-x-4">
+                                    <div className="flex items-center space-x-4">
+                                        <Avatar>
+                                            <AvatarImage />
+                                            <AvatarFallback>1st</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="text-lg font-medium leading-none">
+                                                {leaderboardData[0].name || '-'}
+                                            </p>
+                                            <p className="text-sm text-muted-foreground">
+                                                With score:{' '}
+                                                {leaderboardData[0].score || 0}
+                                            </p>
                                         </div>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        </>
+                                </div>
+                            </CardContent>
+                        </Card>
                     )}
                 </div>
             </aside>
             <TabBar />
         </div>
     );
-};
+}
 
 export default Leaderboard;

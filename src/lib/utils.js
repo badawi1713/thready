@@ -66,9 +66,8 @@ export function getInitials(name) {
 
     if (firstWord.length === 1) {
         return firstInitial;
-    } else {
-        const secondInitial =
-            words.length > 1 ? words[1].charAt(0).toUpperCase() : '';
-        return firstInitial + secondInitial;
     }
+    const secondInitial =
+        words.length > 1 ? words[1].charAt(0).toUpperCase() : '';
+    return firstInitial + secondInitial;
 }

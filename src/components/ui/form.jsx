@@ -1,21 +1,24 @@
+/* eslint-disable react/jsx-no-constructed-context-values */
 import { Slot } from '@radix-ui/react-slot';
 import * as React from 'react';
 import { Controller, FormProvider, useFormContext } from 'react-hook-form';
 
-import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { Label } from './label';
 
 const Form = FormProvider;
 
 const FormFieldContext = React.createContext({});
 
-const FormField = ({ ...props }) => {
+const FormItemContext = React.createContext({});
+
+function FormField({ ...props }) {
     return (
         <FormFieldContext.Provider value={{ name: props.name }}>
             <Controller {...props} />
         </FormFieldContext.Provider>
     );
-};
+}
 
 const useFormField = () => {
     const fieldContext = React.useContext(FormFieldContext);
@@ -39,8 +42,6 @@ const useFormField = () => {
         ...fieldState,
     };
 };
-
-const FormItemContext = React.createContext({});
 
 const FormItem = React.forwardRef(({ className, ...props }, ref) => {
     const id = React.useId();
