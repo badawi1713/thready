@@ -8,7 +8,6 @@ import {
     CardContent,
     CardHeader,
     CardTitle,
-    Separator,
     Spinner,
     Table,
     TableBody,
@@ -56,7 +55,6 @@ function Leaderboard() {
                 <section className="py-6 px-8 md:sticky md:top-0 bg-background  border-b z-10">
                     <Typography variant="heading2">Leaderboard</Typography>
                 </section>
-                <Separator />
                 {loading ? (
                     <div className="py-6 px-8 flex flex-col justify-center items-center">
                         <Spinner />
