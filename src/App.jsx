@@ -10,10 +10,10 @@ function App() {
     const dispatch = useDispatch();
     const isMounted = useRef(true);
 
-    const handleRefreshAuth = useCallback(() => {
+    const handleRefreshAuth = useCallback(async () => {
         const token = authServices.getAccessToken();
         if (token) {
-            dispatch(asyncPreloadProcess());
+            await dispatch(asyncPreloadProcess());
         }
     }, [dispatch]);
 

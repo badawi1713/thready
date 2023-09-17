@@ -1,11 +1,15 @@
 import { actionTypes } from './action';
 
-const isPreloadReducer = (isPreLoad = true, action) => {
+const initialState = {
+    isPreload: false,
+};
+
+const isPreloadReducer = (state = initialState, action = {}) => {
     switch (action.type) {
         case actionTypes.SET_IS_PRELOAD:
-            return action?.payload;
+            return { isPreload: action?.payload?.isPreload };
         default:
-            return isPreLoad;
+            return state;
     }
 };
 
