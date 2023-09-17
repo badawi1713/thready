@@ -49,5 +49,6 @@ module.exports = {
         'react/button-has-type': 'off',
         'no-plusplus': 'off',
         'default-param-last': 'off',
+        'no-nested-ternary': 'off',
     },
 };
