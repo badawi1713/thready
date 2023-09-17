@@ -12,8 +12,9 @@ import {
 } from '@/components/ui';
 import { buttonVariants } from '../ui/button';
 
-const Confirmation = forwardRef(
-    ({
+// eslint-disable-next-line no-unused-vars
+const Confirmation = forwardRef((props, ref) => {
+    const {
         title = 'Confirmation dialog?',
         description = 'This is a default confirmation dialog description.',
         handleAction = () => true,
@@ -21,33 +22,32 @@ const Confirmation = forwardRef(
         actionText = 'Confirm',
         actionVariant = 'default',
         children,
-    }) => {
-        return (
-            <AlertDialog>
-                <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>{title}</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            {description}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>{cancelText}</AlertDialogCancel>
-                        <AlertDialogAction
-                            className={buttonVariants({
-                                variant: actionVariant,
-                            })}
-                            onClick={handleAction}
-                        >
-                            {actionText}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        );
-    }
-);
+    } = props;
+    return (
+        <AlertDialog>
+            <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>{title}</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        {description}
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>{cancelText}</AlertDialogCancel>
+                    <AlertDialogAction
+                        className={buttonVariants({
+                            variant: actionVariant,
+                        })}
+                        onClick={handleAction}
+                    >
+                        {actionText}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+});
 
 Confirmation.displayName = 'Confirmation';
 

@@ -40,7 +40,7 @@ function Home() {
     };
 
     return (
-        <div className="flex items-stretch min-h-[100dvh] lg:container relative">
+        <div className="flex items-stretch min-h-[100dvh] 2xl:container relative">
             {!isMobileScreen && <Sidebar />}
             <main className=" w-full flex-1 flex flex-col pb-20 md:pb-0 min-h-[100dvh]">
                 <section className="py-6 px-8 md:sticky md:top-0 bg-background  border-b z-10">

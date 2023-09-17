@@ -16,3 +16,4 @@ export * from './toast';
 export * from './toaster';
 export * from './tooltip';
 export * from './typography';
+export { default as Spinner } from './spinner';
