@@ -1,34 +1,32 @@
+import useScreenSize from '@/hooks/useScreenSize';
+import { getInitials, screens } from '@/lib/utils';
 import {
     HiArrowLeft,
-    HiHashtag,
     HiOutlineCalendar,
     HiOutlineChat,
     HiOutlineThumbDown,
     HiOutlineThumbUp,
 } from 'react-icons/hi';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
-import useScreenSize from '@/hooks/useScreenSize';
-import { getInitials, screens } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
+import Sidebar from '@/components/shared/sidebar.jsx';
+import TabBar from '@/components/shared/tab-bar.jsx';
 import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+    Badge,
+    Button,
     Card,
     CardContent,
     CardFooter,
     CardHeader,
     CardTitle,
-    Button,
+    Separator,
     Textarea,
     Typography,
-    Separator,
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-    Badge,
-    badgeVariants,
 } from '@/components/ui';
-import TabBar from '@/components/shared/tab-bar.jsx';
-import Sidebar from '@/components/shared/sidebar.jsx';
 
 function ThreadDetail() {
     const screenSize = useScreenSize();
@@ -185,81 +183,6 @@ function ThreadDetail() {
                     </Card>
                 </section>
             </main>
-            <aside className="border-l py-6 px-8 lg:block hidden sticky top-0 min-h-full max-h-[100dvh] w-full max-w-sm">
-                <div className="flex flex-col gap-8">
-                    {isMobileScreen ? (
-                        <div className="rounded-sm dark:bg-slate-800 bg-slate-100 h-40 w-12 lg:w-80" />
-                    ) : (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-1 font-normal">
-                                    <HiHashtag /> Trending
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <Link
-                                        to="/?category=redux"
-                                        className={badgeVariants({
-                                            variant: 'default',
-                                        })}
-                                    >
-                                        #redux
-                                    </Link>
-                                    <Link
-                                        to="/?category=ramen"
-                                        className={badgeVariants({
-                                            variant: 'outline',
-                                        })}
-                                    >
-                                        #ramen
-                                    </Link>
-                                    <Link
-                                        to="/?category=travel"
-                                        className={badgeVariants({
-                                            variant: 'outline',
-                                        })}
-                                    >
-                                        #travel
-                                    </Link>
-                                    <Link
-                                        to="/?category=pokemon"
-                                        className={badgeVariants({
-                                            variant: 'outline',
-                                        })}
-                                    >
-                                        #pokemon
-                                    </Link>
-                                    <Link
-                                        to="/?category=breatofthewild"
-                                        className={badgeVariants({
-                                            variant: 'outline',
-                                        })}
-                                    >
-                                        #breatofthewild
-                                    </Link>
-                                    <Link
-                                        to="/?category=surabaya"
-                                        className={badgeVariants({
-                                            variant: 'outline',
-                                        })}
-                                    >
-                                        #surabaya
-                                    </Link>
-                                    <Link
-                                        to="/?category=sky"
-                                        className={badgeVariants({
-                                            variant: 'outline',
-                                        })}
-                                    >
-                                        #sky
-                                    </Link>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-                </div>
-            </aside>
             <TabBar />
         </div>
     );

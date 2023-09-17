@@ -32,10 +32,16 @@ function asyncSetAuthUser({ email, password }) {
                 await services.putAccessToken(token);
                 const authUser = await services.getOwnProfile();
                 dispatch(setAuthUserActionCreator(authUser));
+                toast({
+                    title: 'Login Successful',
+                    description: 'Hello, welcome back!',
+                });
+
                 if (authUser) {
                     return true;
                 }
             }
+
             return false;
         } catch (error) {
             toast({

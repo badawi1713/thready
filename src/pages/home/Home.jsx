@@ -1,3 +1,5 @@
+import Sidebar from '@/components/shared/sidebar.jsx';
+import TabBar from '@/components/shared/tab-bar.jsx';
 import {
     Avatar,
     AvatarFallback,
@@ -9,6 +11,9 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
+    FormMessage,
+    Input,
+    Label,
     Spinner,
     Textarea,
     Tooltip,
@@ -17,10 +22,14 @@ import {
     Typography,
     badgeVariants,
 } from '@/components/ui';
-import Sidebar from '@/components/shared/sidebar.jsx';
-import TabBar from '@/components/shared/tab-bar.jsx';
 import useScreenSize from '@/hooks/useScreenSize';
+import threadServices from '@/lib/services/thread-services';
 import { getInitials, postedAt, screens } from '@/lib/utils';
+import { getAllThreadActionCreator } from '@/store/reducers/all-thread-reducer/action';
+import { yupResolver } from '@hookform/resolvers/yup';
+import parse from 'html-react-parser';
+import { useCallback, useEffect, useRef } from 'react';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import {
     HiHashtag,
     HiOutlineCalendar,
@@ -30,9 +39,12 @@ import {
 } from 'react-icons/hi';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { useCallback, useEffect, useRef } from 'react';
-import { getAllThreadActionCreator } from '@/store/reducers/all-thread-reducer/action';
-import parse from 'html-react-parser';
+import * as yup from 'yup';
+
+const schema = yup.object().shape({
+    title: yup.string().required('Thread title is required'),
+    body: yup.string().required('Your thread content must be filled'),
+});
 
 function Home() {
     const dispatch = useDispatch();
@@ -45,11 +57,15 @@ function Home() {
     const { loading, error, threads } = useSelector(
         (state) => state?.allThreadReducer
     );
+    const categoryList = useSelector((state) => state.categoryListReducer);
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const categoryParams = searchParams.get('category');
 
     const isMounted = useRef(true);
 
-    const handleNavigate = (id) => {
-        navigation(`/thread/${id}`);
+    const handleNavigate = (url) => {
+        navigation(url);
     };
 
     const getAllThreads = useCallback(() => {
@@ -62,6 +78,31 @@ function Home() {
             isMounted.current = false;
         }
     }, [getAllThreads]);
+
+    const formMethods = useForm({
+        defaultValues: {
+            title: '',
+            body: '',
+            category: '',
+        },
+        resolver: yupResolver(schema),
+    });
+
+    const { handleSubmit, control, formState, reset } = formMethods;
+
+    const { errors, isSubmitting } = formState;
+
+    const handleSave = handleSubmit(async (formData) => {
+        const response = await threadServices.addNewThread(formData);
+        if (response) {
+            getAllThreads();
+            reset({
+                title: '',
+                body: '',
+                category: '',
+            });
+        }
+    });
 
     return (
         <div className="flex items-stretch min-h-[100dvh] 2xl:container relative">
@@ -80,62 +121,40 @@ function Home() {
                             </CardHeader>
                             <CardContent>
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    <Link
-                                        to="/?category=redux"
-                                        className={badgeVariants({
-                                            variant: 'default',
-                                        })}
-                                    >
-                                        #redux
-                                    </Link>
-                                    <Link
-                                        to="/?category=ramen"
-                                        className={badgeVariants({
-                                            variant: 'outline',
-                                        })}
-                                    >
-                                        #ramen
-                                    </Link>
-                                    <Link
-                                        to="/?category=travel"
-                                        className={badgeVariants({
-                                            variant: 'outline',
-                                        })}
-                                    >
-                                        #travel
-                                    </Link>
-                                    <Link
-                                        to="/?category=pokemon"
-                                        className={badgeVariants({
-                                            variant: 'outline',
-                                        })}
-                                    >
-                                        #pokemon
-                                    </Link>
-                                    <Link
-                                        to="/?category=breatofthewild"
-                                        className={badgeVariants({
-                                            variant: 'outline',
-                                        })}
-                                    >
-                                        #breatofthewild
-                                    </Link>
-                                    <Link
-                                        to="/?category=surabaya"
-                                        className={badgeVariants({
-                                            variant: 'outline',
-                                        })}
-                                    >
-                                        #surabaya
-                                    </Link>
-                                    <Link
-                                        to="/?category=sky"
-                                        className={badgeVariants({
-                                            variant: 'outline',
-                                        })}
-                                    >
-                                        #sky
-                                    </Link>
+                                    {categoryList?.length < 1 ? (
+                                        <Typography
+                                            variant="body1"
+                                            className=" text-primary text-center"
+                                        >
+                                            Sorry, there is no something
+                                            trending right now!
+                                        </Typography>
+                                    ) : (
+                                        categoryList?.map((category) => {
+                                            return (
+                                                <button
+                                                    key={category}
+                                                    onClick={() => {
+                                                        const url =
+                                                            categoryParams ===
+                                                            category
+                                                                ? '/'
+                                                                : `/?category=${category}`;
+                                                        handleNavigate(url);
+                                                    }}
+                                                    className={badgeVariants({
+                                                        variant:
+                                                            categoryParams ===
+                                                            category
+                                                                ? 'default'
+                                                                : 'outline',
+                                                    })}
+                                                >
+                                                    #{category}
+                                                </button>
+                                            );
+                                        })
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>
@@ -159,13 +178,139 @@ function Home() {
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <form>
-                                    <Textarea placeholder="What's on your mind?" />
-                                </form>
+                                <FormProvider {...formMethods}>
+                                    <form
+                                        onSubmit={handleSave}
+                                        className="flex flex-col w-full gap-4"
+                                    >
+                                        <Controller
+                                            name="title"
+                                            control={control}
+                                            render={({
+                                                field: {
+                                                    onChange,
+                                                    value,
+                                                    ...field
+                                                },
+                                            }) => {
+                                                return (
+                                                    <div className="flex flex-col w-full gap-2">
+                                                        <Label htmlFor="title">
+                                                            Thread Title
+                                                        </Label>
+                                                        <Input
+                                                            {...field}
+                                                            id="title"
+                                                            placeholder="Enter your title"
+                                                            onChange={(e) =>
+                                                                onChange(
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                            value={value}
+                                                        />
+                                                        {errors?.title
+                                                            ?.message && (
+                                                            <FormMessage>
+                                                                {
+                                                                    errors
+                                                                        ?.title
+                                                                        ?.message
+                                                                }
+                                                            </FormMessage>
+                                                        )}
+                                                    </div>
+                                                );
+                                            }}
+                                        />
+                                        <Controller
+                                            name="category"
+                                            control={control}
+                                            render={({
+                                                field: {
+                                                    onChange,
+                                                    value,
+                                                    ...field
+                                                },
+                                            }) => {
+                                                return (
+                                                    <div className="flex flex-col w-full gap-2">
+                                                        <Label htmlFor="category">
+                                                            Category
+                                                        </Label>
+                                                        <Input
+                                                            {...field}
+                                                            id="category"
+                                                            placeholder="Enter your category"
+                                                            onChange={(e) =>
+                                                                onChange(
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                            value={value}
+                                                        />
+                                                        {errors?.category
+                                                            ?.message && (
+                                                            <FormMessage>
+                                                                {
+                                                                    errors
+                                                                        ?.category
+                                                                        ?.message
+                                                                }
+                                                            </FormMessage>
+                                                        )}
+                                                    </div>
+                                                );
+                                            }}
+                                        />
+                                        <Controller
+                                            name="body"
+                                            control={control}
+                                            render={({
+                                                field: {
+                                                    onChange,
+                                                    value,
+                                                    ...field
+                                                },
+                                            }) => {
+                                                return (
+                                                    <div className="flex flex-col w-full gap-2">
+                                                        <Textarea
+                                                            placeholder="What's on your mind?"
+                                                            {...field}
+                                                            id="body"
+                                                            onChange={(e) =>
+                                                                onChange(
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                            value={value}
+                                                        />
+                                                        {errors?.body
+                                                            ?.message && (
+                                                            <FormMessage>
+                                                                {
+                                                                    errors?.body
+                                                                        ?.message
+                                                                }
+                                                            </FormMessage>
+                                                        )}
+                                                    </div>
+                                                );
+                                            }}
+                                        />
+                                        <Button
+                                            disabled={isSubmitting}
+                                            className="self-end"
+                                        >
+                                            {isSubmitting ? 'Posting' : 'Post'}
+                                        </Button>
+                                    </form>
+                                </FormProvider>
                             </CardContent>
-                            <CardFooter className="flex justify-end">
-                                <Button>Post</Button>
-                            </CardFooter>
                         </Card>
                     </section>
                 )}
@@ -199,7 +344,7 @@ function Home() {
                             return (
                                 <Card key={thread?.id}>
                                     <CardHeader>
-                                        <Link to="/thread/1">
+                                        <Link to={`/thread/${thread?.id}`}>
                                             <CardTitle>
                                                 {thread?.title}
                                             </CardTitle>
@@ -250,7 +395,9 @@ function Home() {
                                                 </button>
                                                 <button
                                                     onClick={() =>
-                                                        handleNavigate(1)
+                                                        handleNavigate(
+                                                            `/thread/${thread?.id}`
+                                                        )
                                                     }
                                                     className="flex items-center gap-1.5"
                                                 >
@@ -261,11 +408,13 @@ function Home() {
                                                     </Typography>
                                                 </button>
                                             </section>
-                                            <section className="flex items-center gap-3">
-                                                <Badge variant="outline">
-                                                    #{thread?.category}
-                                                </Badge>
-                                            </section>
+                                            {thread?.category && (
+                                                <section className="flex items-center gap-3">
+                                                    <Badge variant="outline">
+                                                        #{thread?.category}
+                                                    </Badge>
+                                                </section>
+                                            )}
                                         </div>
                                     </CardFooter>
                                 </Card>
@@ -316,73 +465,59 @@ function Home() {
                                 </Card>
                             )}
 
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-1 font-normal">
-                                        <HiHashtag /> Trending
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        <Link
-                                            to="/?category=redux"
-                                            className={badgeVariants({
-                                                variant: 'default',
-                                            })}
-                                        >
-                                            #redux
-                                        </Link>
-                                        <Link
-                                            to="/?category=ramen"
-                                            className={badgeVariants({
-                                                variant: 'outline',
-                                            })}
-                                        >
-                                            #ramen
-                                        </Link>
-                                        <Link
-                                            to="/?category=travel"
-                                            className={badgeVariants({
-                                                variant: 'outline',
-                                            })}
-                                        >
-                                            #travel
-                                        </Link>
-                                        <Link
-                                            to="/?category=pokemon"
-                                            className={badgeVariants({
-                                                variant: 'outline',
-                                            })}
-                                        >
-                                            #pokemon
-                                        </Link>
-                                        <Link
-                                            to="/?category=breatofthewild"
-                                            className={badgeVariants({
-                                                variant: 'outline',
-                                            })}
-                                        >
-                                            #breatofthewild
-                                        </Link>
-                                        <Link
-                                            to="/?category=surabaya"
-                                            className={badgeVariants({
-                                                variant: 'outline',
-                                            })}
-                                        >
-                                            #surabaya
-                                        </Link>
-                                        <Link
-                                            to="/?category=sky"
-                                            className={badgeVariants({
-                                                variant: 'outline',
-                                            })}
-                                        >
-                                            #sky
-                                        </Link>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                            {!loading && !error && (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-1 font-normal">
+                                            <HiHashtag /> Trending
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            {categoryList?.length < 1 ? (
+                                                <Typography
+                                                    variant="body1"
+                                                    className=" text-primary text-center"
+                                                >
+                                                    Sorry, there is no something
+                                                    trending right now!
+                                                </Typography>
+                                            ) : (
+                                                categoryList?.map(
+                                                    (category) => {
+                                                        return (
+                                                            <button
+                                                                key={category}
+                                                                onClick={() => {
+                                                                    const url =
+                                                                        categoryParams ===
+                                                                        category
+                                                                            ? '/'
+                                                                            : `/?category=${category}`;
+                                                                    handleNavigate(
+                                                                        url
+                                                                    );
+                                                                }}
+                                                                className={badgeVariants(
+                                                                    {
+                                                                        variant:
+                                                                            categoryParams ===
+                                                                            category
+                                                                                ? 'default'
+                                                                                : 'outline',
+                                                                    }
+                                                                )}
+                                                            >
+                                                                #{category}
+                                                            </button>
+                                                        );
+                                                    }
+                                                )
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
                         </>
                     )}
                 </div>

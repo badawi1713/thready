@@ -20,8 +20,28 @@ const getAllThreadsData = async () => {
     }
 };
 
+const addNewThread = async (data) => {
+    try {
+        await axios.post('/threads', data);
+        toast({
+            title: 'Create New Thread',
+            description: 'Your thread has been posted',
+        });
+        return true;
+    } catch (error) {
+        const errorMessage = error?.response?.data?.message || error?.message;
+        toast({
+            title: 'Get Threads Failed',
+            description: errorMessage,
+            variant: 'destructive',
+        });
+        return false;
+    }
+};
+
 const threadServices = {
     getAllThreadsData,
+    addNewThread,
 };
 
 export default threadServices;

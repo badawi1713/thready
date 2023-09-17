@@ -1,4 +1,4 @@
-import { Spinner } from "../ui";
+import { Spinner } from '../ui';
 
 function SplashScreen() {
     return (

@@ -5,7 +5,7 @@ const actionTypes = {
     SET_IS_PRELOAD: 'SET_IS_PRELOAD',
 };
 
-function setisPreloadActionCreator(status) {
+function setIsPreloadActionCreator(status) {
     return {
         type: actionTypes.SET_IS_PRELOAD,
         payload: {
@@ -16,16 +16,16 @@ function setisPreloadActionCreator(status) {
 
 function asyncPreloadProcess() {
     return async (dispatch) => {
-        dispatch(setisPreloadActionCreator(true));
+        dispatch(setIsPreloadActionCreator(true));
         try {
             const authUser = await services.getOwnProfile();
             await dispatch(setAuthUserActionCreator(authUser || null));
         } catch (error) {
             dispatch(setAuthUserActionCreator(null));
         } finally {
-            dispatch(setisPreloadActionCreator(false));
+            dispatch(setIsPreloadActionCreator(false));
         }
     };
 }
 
-export { actionTypes, asyncPreloadProcess, setisPreloadActionCreator };
+export { actionTypes, asyncPreloadProcess, setIsPreloadActionCreator };
