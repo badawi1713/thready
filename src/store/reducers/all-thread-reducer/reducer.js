@@ -14,6 +14,7 @@ const allThreadReducer = (state = initialState, action = {}) => {
             return { ...state, loading: false, threads: action.payload };
         case actionTypes.GET_ALL_THREADS_FAILED:
             return { ...state, loading: false, error: action.payload };
+        case actionTypes.GET_THREADS_BY_CATEGORY:
         default:
             return state;
     }

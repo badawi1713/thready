@@ -62,6 +62,10 @@ function Home() {
     const searchParams = new URLSearchParams(window.location.search);
     const categoryParams = searchParams.get('category');
 
+    const filteredThreads = categoryParams
+        ? threads?.filter((thread) => thread?.category === categoryParams)
+        : threads;
+
     const isMounted = useRef(true);
 
     const handleNavigate = (url) => {
@@ -327,7 +331,7 @@ function Home() {
                             {error || 'Oops.. sorry, something went wrong!'}
                         </Typography>
                     </section>
-                ) : threads?.length < 1 ? (
+                ) : filteredThreads?.length < 1 ? (
                     <section className="py-6 px-8 flex justify-center items-center mb-6">
                         <Typography
                             variant="body1"
@@ -338,7 +342,7 @@ function Home() {
                     </section>
                 ) : (
                     <section className="py-6 px-8 flex flex-col gap-10 mb-6">
-                        {threads?.map((thread) => {
+                        {filteredThreads?.map((thread) => {
                             const downVotes = thread.downVotesBy.length || 0;
                             const upVotes = thread.upVotesBy.length || 0;
                             return (

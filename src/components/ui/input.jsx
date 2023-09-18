@@ -11,13 +11,13 @@ const Input = React.forwardRef(({ className, type, ...props }, ref) => {
                     props?.error
                         ? 'border-red-500 dark:border-2'
                         : 'border-input'
-                } bg-white items-stretch`,
+                } bg-transparent items-stretch`,
                 className
             )}
         >
             <input
                 className={cn(
-                    ` w-full px-3 py-2 rounded-md text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none  disabled:cursor-not-allowed disabled:opacity-50 dark:text-black`,
+                    ` w-full px-3 py-2 rounded-md text-sm file:border-0 bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none  disabled:cursor-not-allowed disabled:opacity-50 dark:text-primary`,
                     className
                 )}
                 type={type}
@@ -25,7 +25,9 @@ const Input = React.forwardRef(({ className, type, ...props }, ref) => {
                 {...props}
             />
             {props?.icon && (
-                <div className="px-3 py-2 h-full text-black">{props?.icon}</div>
+                <div className="px-3 py-2 h-full text-primary">
+                    {props?.icon}
+                </div>
             )}
         </div>
     );
