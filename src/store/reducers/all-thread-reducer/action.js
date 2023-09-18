@@ -6,12 +6,10 @@ const actionTypes = {
     GET_ALL_THREADS_PENDING: 'GET_ALL_THREADS_PENDING',
     GET_ALL_THREADS_SUCCESS: 'GET_ALL_THREADS_SUCCESS',
     GET_ALL_THREADS_FAILED: 'GET_ALL_THREADS_FAILED',
-    GET_THREADS_BY_CATEGORY: 'GET_THREADS_BY_CATEGORY',
 };
 
 const getAllThreadActionCreator = () => {
     return async (dispatch) => {
-        dispatch({ type: actionTypes.GET_ALL_THREADS_PENDING });
         try {
             const threads = await threadServices.getAllThreadsData();
             const users = await sharedServices.getUserListData();

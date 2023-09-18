@@ -39,9 +39,26 @@ const addNewThread = async (data) => {
     }
 };
 
+const getThreadDetailById = async (threadId) => {
+    try {
+        const response = await axios.get(`/threads/${threadId}`);
+        const data = response?.data?.data?.detailThread || null;
+        return { data, error: '' };
+    } catch (error) {
+        const errorMessage = error?.response?.data?.message || error?.message;
+        toast({
+            title: 'Get Thread Detail Failed',
+            description: errorMessage,
+            variant: 'destructive',
+        });
+        return { data: [], error: errorMessage };
+    }
+};
+
 const threadServices = {
     getAllThreadsData,
     addNewThread,
+    getThreadDetailById,
 };
 
 export default threadServices;
