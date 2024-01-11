@@ -55,10 +55,58 @@ const getThreadDetailById = async (threadId) => {
     }
 };
 
+const postThreadUpVote = async (threadId = '') => {
+    try {
+        await axios.post(`/threads/${threadId}/up-vote`);
+        return true;
+    } catch (error) {
+        const errorMessage = error?.response?.data?.message || error?.message;
+        toast({
+            title: 'Failed to Up Vote the Thread',
+            description: errorMessage,
+            variant: 'destructive',
+        });
+        return false;
+    }
+};
+
+const postThreadDownVote = async (threadId = '') => {
+    try {
+        await axios.post(`/threads/${threadId}/down-vote`);
+        return true;
+    } catch (error) {
+        const errorMessage = error?.response?.data?.message || error?.message;
+        toast({
+            title: 'Failed to Down Vote the Thread',
+            description: errorMessage,
+            variant: 'destructive',
+        });
+        return false;
+    }
+};
+
+const postThreadNeutralVote = async (threadId = '') => {
+    try {
+        await axios.post(`/threads/${threadId}/neutral-vote`);
+        return true;
+    } catch (error) {
+        const errorMessage = error?.response?.data?.message || error?.message;
+        toast({
+            title: "Failed to Change Thread's Vote",
+            description: errorMessage,
+            variant: 'destructive',
+        });
+        return false;
+    }
+};
+
 const threadServices = {
     getAllThreadsData,
     addNewThread,
     getThreadDetailById,
+    postThreadUpVote,
+    postThreadDownVote,
+    postThreadNeutralVote,
 };
 
 export default threadServices;

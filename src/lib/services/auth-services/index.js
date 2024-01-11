@@ -6,7 +6,7 @@ function putAccessToken(token) {
 }
 
 function getAccessToken() {
-    return localStorage.getItem('accessToken');
+    return localStorage.getItem('accessToken') || '';
 }
 
 async function register({ email, name, password }) {

@@ -6,9 +6,123 @@ const actionTypes = {
     GET_ALL_THREADS_PENDING: 'GET_ALL_THREADS_PENDING',
     GET_ALL_THREADS_SUCCESS: 'GET_ALL_THREADS_SUCCESS',
     GET_ALL_THREADS_FAILED: 'GET_ALL_THREADS_FAILED',
+    HANDLE_THREADS_UP_VOTE: 'HANDLE_THREADS_UP_VOTE',
+    HANDLE_THREADS_DOWN_VOTE: 'HANDLE_THREADS_DOWN_VOTE',
+    HANDLE_THREADS_NEUTRAL_VOTE: 'HANDLE_THREADS_NEUTRAL_VOTE',
 };
 
-const getAllThreadActionCreator = () => {
+const handleThreadsUpVoteActionCreator = ({ threadId = '', userId = '' }) => {
+    return {
+        type: actionTypes.HANDLE_THREADS_UP_VOTE,
+        payload: {
+            threadId,
+            userId,
+        },
+    };
+};
+
+const handleThreadsNeutralVoteActionCreator = ({
+    threadId = '',
+    userId = '',
+}) => {
+    return {
+        type: actionTypes.HANDLE_THREADS_NEUTRAL_VOTE,
+        payload: {
+            threadId,
+            userId,
+        },
+    };
+};
+
+const handleThreadsDownVoteActionCreator = ({ threadId = '', userId = '' }) => {
+    return {
+        type: actionTypes.HANDLE_THREADS_DOWN_VOTE,
+        payload: {
+            threadId,
+            userId,
+        },
+    };
+};
+
+const asycnThreadsUpVote = ({ threadId = '' }) => {
+    return async (dispatch, getState) => {
+        const { authUserReducer } = getState();
+        dispatch(
+            handleThreadsNeutralVoteActionCreator({
+                threadId,
+                userId: authUserReducer.id,
+            })
+        );
+        dispatch(
+            handleThreadsUpVoteActionCreator({
+                threadId,
+                userId: authUserReducer.id,
+            })
+        );
+        try {
+            await threadServices.postThreadUpVote(threadId);
+        } catch (error) {
+            dispatch(
+                handleThreadsNeutralVoteActionCreator({
+                    threadId,
+                    userId: authUserReducer.id,
+                })
+            );
+        }
+    };
+};
+
+const asycnThreadsNeutralVote = ({ threadId = '' }) => {
+    return async (dispatch, getState) => {
+        const { authUserReducer } = getState();
+        dispatch(
+            handleThreadsNeutralVoteActionCreator({
+                threadId,
+                userId: authUserReducer.id,
+            })
+        );
+        try {
+            await threadServices.postThreadNeutralVote(threadId);
+        } catch (error) {
+            dispatch(
+                handleThreadsNeutralVoteActionCreator({
+                    threadId,
+                    userId: authUserReducer.id,
+                })
+            );
+        }
+    };
+};
+
+const asycnThreadsDownVote = ({ threadId = '' }) => {
+    return async (dispatch, getState) => {
+        const { authUserReducer } = getState();
+        dispatch(
+            handleThreadsNeutralVoteActionCreator({
+                threadId,
+                userId: authUserReducer.id,
+            })
+        );
+        dispatch(
+            handleThreadsDownVoteActionCreator({
+                threadId,
+                userId: authUserReducer.id,
+            })
+        );
+        try {
+            await threadServices.postThreadDownVote(threadId);
+        } catch (error) {
+            dispatch(
+                handleThreadsNeutralVoteActionCreator({
+                    threadId,
+                    userId: authUserReducer.id,
+                })
+            );
+        }
+    };
+};
+
+const asyncGetAllThreads = () => {
     return async (dispatch) => {
         try {
             const threads = await threadServices.getAllThreadsData();
@@ -43,4 +157,11 @@ const getAllThreadActionCreator = () => {
     };
 };
 
-export { actionTypes, getAllThreadActionCreator };
+export {
+    actionTypes,
+    asyncGetAllThreads,
+    asycnThreadsUpVote,
+    asycnThreadsNeutralVote,
+    asycnThreadsDownVote,
+    handleThreadsUpVoteActionCreator,
+};

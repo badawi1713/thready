@@ -33,6 +33,7 @@ import {
 } from '@/components/ui';
 import { useCallback, useEffect, useRef } from 'react';
 import { asyncGetThreadDetail } from '@/store/reducers/thread-detail-reducer/action';
+import { toast } from '@/hooks/useToast';
 
 function ThreadDetail() {
     const dispatch = useDispatch();
@@ -46,8 +47,6 @@ function ThreadDetail() {
     const { loading, error, threadDetail } = useSelector(
         (state) => state?.threadDetailReducer
     );
-
-    console.log(threadDetail);
 
     const isMounted = useRef(true);
 
@@ -127,14 +126,40 @@ function ThreadDetail() {
                             <CardFooter>
                                 <div className="flex items-center w-full justify-between flex-wrap gap-3">
                                     <section className="flex items-center gap-3">
-                                        <button className="flex items-center gap-1.5 text-green-600">
+                                        <button
+                                            onClick={() => {
+                                                if (!authUser) {
+                                                    return toast({
+                                                        title: 'Cannot do that',
+                                                        description:
+                                                            'You must login first to like this thread',
+                                                        variant: 'destructive',
+                                                    });
+                                                }
+                                                return false;
+                                            }}
+                                            className="flex items-center gap-1.5 text-green-600"
+                                        >
                                             <HiOutlineThumbUp size={18} />
                                             <Typography variant="label">
                                                 {threadDetail?.upVotesBy
                                                     ?.length || 0}
                                             </Typography>
                                         </button>
-                                        <button className="flex items-center gap-1.5 text-red-600">
+                                        <button
+                                            onClick={() => {
+                                                if (!authUser) {
+                                                    return toast({
+                                                        title: 'Cannot do that',
+                                                        description:
+                                                            'You must login first to like this thread',
+                                                        variant: 'destructive',
+                                                    });
+                                                }
+                                                return false;
+                                            }}
+                                            className="flex items-center gap-1.5 text-red-600"
+                                        >
                                             <HiOutlineThumbDown size={18} />
                                             <Typography variant="label">
                                                 {threadDetail?.downVotesBy
@@ -219,13 +244,39 @@ function ThreadDetail() {
                             <CardFooter>
                                 <div className="flex items-center w-full justify-between flex-wrap gap-3">
                                     <section className="flex items-center gap-3">
-                                        <button className="flex items-center gap-1.5 text-green-600">
+                                        <button
+                                            onClick={() => {
+                                                if (!authUser) {
+                                                    return toast({
+                                                        title: 'Cannot do that',
+                                                        description:
+                                                            'You must login first to like this comment',
+                                                        variant: 'destructive',
+                                                    });
+                                                }
+                                                return false;
+                                            }}
+                                            className="flex items-center gap-1.5 text-green-600"
+                                        >
                                             <HiOutlineThumbUp size={18} />
                                             <Typography variant="label">
                                                 10
                                             </Typography>
                                         </button>
-                                        <button className="flex items-center gap-1.5 text-red-600">
+                                        <button
+                                            onClick={() => {
+                                                if (!authUser) {
+                                                    return toast({
+                                                        title: 'Cannot do that',
+                                                        description:
+                                                            'You must login first to like this comment',
+                                                        variant: 'destructive',
+                                                    });
+                                                }
+                                                return false;
+                                            }}
+                                            className="flex items-center gap-1.5 text-red-600"
+                                        >
                                             <HiOutlineThumbDown size={18} />
                                             <Typography variant="label">
                                                 0

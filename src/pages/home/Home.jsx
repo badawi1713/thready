@@ -5,17 +5,12 @@ import {
     AvatarFallback,
     AvatarImage,
     Badge,
-    Button,
     Card,
     CardContent,
     CardFooter,
     CardHeader,
     CardTitle,
-    FormMessage,
-    Input,
-    Label,
     Spinner,
-    Textarea,
     Tooltip,
     TooltipContent,
     TooltipTrigger,
@@ -23,30 +18,31 @@ import {
     badgeVariants,
 } from '@/components/ui';
 import useScreenSize from '@/hooks/useScreenSize';
-import threadServices from '@/lib/services/thread-services';
+import { toast } from '@/hooks/useToast';
 import { getInitials, postedAt, screens } from '@/lib/utils';
-import { getAllThreadActionCreator } from '@/store/reducers/all-thread-reducer/action';
-import { yupResolver } from '@hookform/resolvers/yup';
+import {
+    asycnThreadsDownVote,
+    asycnThreadsNeutralVote,
+    asycnThreadsUpVote,
+    asyncGetAllThreads,
+} from '@/store/reducers/all-thread-reducer/action';
 import parse from 'html-react-parser';
 import { useCallback, useEffect, useRef } from 'react';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
 import {
     HiHashtag,
     HiOutlineCalendar,
     HiOutlineChat,
     HiOutlineThumbDown,
     HiOutlineThumbUp,
+    HiThumbDown,
+    HiThumbUp,
 } from 'react-icons/hi';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import * as yup from 'yup';
-
-const schema = yup.object().shape({
-    title: yup.string().required('Thread title is required'),
-    body: yup.string().required('Your thread content must be filled'),
-});
+import NewThreadForm from './components/NewThreadForm';
 
 function Home() {
+    const isMounted = useRef(true);
     const dispatch = useDispatch();
     const screenSize = useScreenSize();
     const { width } = screenSize;
@@ -66,14 +62,22 @@ function Home() {
         ? threads?.filter((thread) => thread?.category === categoryParams)
         : threads;
 
-    const isMounted = useRef(true);
+    const isUpVoted = useCallback(
+        (upVotes = []) => upVotes?.includes(authUser?.id),
+        [authUser?.id]
+    );
+
+    const isDownVoted = useCallback(
+        (downVotes = []) => downVotes?.includes(authUser?.id),
+        [authUser?.id]
+    );
 
     const handleNavigate = (url) => {
         navigation(url);
     };
 
     const getAllThreads = useCallback(() => {
-        dispatch(getAllThreadActionCreator());
+        dispatch(asyncGetAllThreads());
     }, [dispatch]);
 
     useEffect(() => {
@@ -82,31 +86,6 @@ function Home() {
             isMounted.current = false;
         }
     }, [getAllThreads]);
-
-    const formMethods = useForm({
-        defaultValues: {
-            title: '',
-            body: '',
-            category: '',
-        },
-        resolver: yupResolver(schema),
-    });
-
-    const { handleSubmit, control, formState, reset } = formMethods;
-
-    const { errors, isSubmitting } = formState;
-
-    const handleSave = handleSubmit(async (formData) => {
-        const response = await threadServices.addNewThread(formData);
-        if (response) {
-            getAllThreads();
-            reset({
-                title: '',
-                body: '',
-                category: '',
-            });
-        }
-    });
 
     return (
         <div className="flex items-stretch min-h-[100dvh] 2xl:container relative">
@@ -164,160 +143,7 @@ function Home() {
                         </Card>
                     </section>
                 )}
-                {authUser && (
-                    <section className="py-6 px-8 border-b">
-                        <Card>
-                            <CardHeader>
-                                <div className="flex items-center gap-3">
-                                    <Avatar>
-                                        <AvatarImage src={authUser?.avatar} />
-                                        <AvatarFallback>
-                                            {getInitials(authUser?.name)}
-                                        </AvatarFallback>
-                                    </Avatar>
-
-                                    <Typography variant="body1">
-                                        Whats on your thought?
-                                    </Typography>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <FormProvider {...formMethods}>
-                                    <form
-                                        onSubmit={handleSave}
-                                        className="flex flex-col w-full gap-4"
-                                    >
-                                        <Controller
-                                            name="title"
-                                            control={control}
-                                            render={({
-                                                field: {
-                                                    onChange,
-                                                    value,
-                                                    ...field
-                                                },
-                                            }) => {
-                                                return (
-                                                    <div className="flex flex-col w-full gap-2">
-                                                        <Label htmlFor="title">
-                                                            Thread Title
-                                                        </Label>
-                                                        <Input
-                                                            {...field}
-                                                            id="title"
-                                                            placeholder="Enter your title"
-                                                            onChange={(e) =>
-                                                                onChange(
-                                                                    e.target
-                                                                        .value
-                                                                )
-                                                            }
-                                                            value={value}
-                                                        />
-                                                        {errors?.title
-                                                            ?.message && (
-                                                            <FormMessage>
-                                                                {
-                                                                    errors
-                                                                        ?.title
-                                                                        ?.message
-                                                                }
-                                                            </FormMessage>
-                                                        )}
-                                                    </div>
-                                                );
-                                            }}
-                                        />
-                                        <Controller
-                                            name="category"
-                                            control={control}
-                                            render={({
-                                                field: {
-                                                    onChange,
-                                                    value,
-                                                    ...field
-                                                },
-                                            }) => {
-                                                return (
-                                                    <div className="flex flex-col w-full gap-2">
-                                                        <Label htmlFor="category">
-                                                            Category
-                                                        </Label>
-                                                        <Input
-                                                            {...field}
-                                                            id="category"
-                                                            placeholder="Enter your category"
-                                                            onChange={(e) =>
-                                                                onChange(
-                                                                    e.target
-                                                                        .value
-                                                                )
-                                                            }
-                                                            value={value}
-                                                        />
-                                                        {errors?.category
-                                                            ?.message && (
-                                                            <FormMessage>
-                                                                {
-                                                                    errors
-                                                                        ?.category
-                                                                        ?.message
-                                                                }
-                                                            </FormMessage>
-                                                        )}
-                                                    </div>
-                                                );
-                                            }}
-                                        />
-                                        <Controller
-                                            name="body"
-                                            control={control}
-                                            render={({
-                                                field: {
-                                                    onChange,
-                                                    value,
-                                                    ...field
-                                                },
-                                            }) => {
-                                                return (
-                                                    <div className="flex flex-col w-full gap-2">
-                                                        <Textarea
-                                                            placeholder="What's on your mind?"
-                                                            {...field}
-                                                            id="body"
-                                                            onChange={(e) =>
-                                                                onChange(
-                                                                    e.target
-                                                                        .value
-                                                                )
-                                                            }
-                                                            value={value}
-                                                        />
-                                                        {errors?.body
-                                                            ?.message && (
-                                                            <FormMessage>
-                                                                {
-                                                                    errors?.body
-                                                                        ?.message
-                                                                }
-                                                            </FormMessage>
-                                                        )}
-                                                    </div>
-                                                );
-                                            }}
-                                        />
-                                        <Button
-                                            disabled={isSubmitting}
-                                            className="self-end"
-                                        >
-                                            {isSubmitting ? 'Posting' : 'Post'}
-                                        </Button>
-                                    </form>
-                                </FormProvider>
-                            </CardContent>
-                        </Card>
-                    </section>
-                )}
+                {authUser && <NewThreadForm />}
                 {loading ? (
                     <div className="py-6 px-8 flex flex-col justify-center items-center">
                         <Spinner />
@@ -376,23 +202,109 @@ function Home() {
                                         </div>
                                     </CardHeader>
                                     <CardContent>
-                                        {parse(thread?.body)}
+                                        <div className="line-clamp-4">
+                                            {parse(thread?.body)}
+                                        </div>
                                     </CardContent>
                                     <CardFooter>
                                         <div className="flex items-center w-full justify-between flex-wrap gap-3">
                                             <section className="flex items-center gap-3">
-                                                <button className="flex items-center gap-1.5 text-green-600">
-                                                    <HiOutlineThumbUp
-                                                        size={18}
-                                                    />
+                                                <button
+                                                    onClick={() => {
+                                                        const alreadyUpVoted =
+                                                            isUpVoted(
+                                                                thread?.upVotesBy
+                                                            );
+                                                        if (!authUser) {
+                                                            return toast({
+                                                                title: 'Cannot do that',
+                                                                description:
+                                                                    'You must login first to like this thread',
+                                                                variant:
+                                                                    'destructive',
+                                                            });
+                                                        }
+                                                        if (alreadyUpVoted) {
+                                                            return dispatch(
+                                                                asycnThreadsNeutralVote(
+                                                                    {
+                                                                        threadId:
+                                                                            thread.id,
+                                                                    }
+                                                                )
+                                                            );
+                                                        }
+                                                        return dispatch(
+                                                            asycnThreadsUpVote({
+                                                                threadId:
+                                                                    thread?.id,
+                                                            })
+                                                        );
+                                                    }}
+                                                    className="flex items-center gap-1.5 text-green-600"
+                                                >
+                                                    {isUpVoted(
+                                                        thread?.upVotesBy
+                                                    ) ? (
+                                                        <HiThumbUp size={18} />
+                                                    ) : (
+                                                        <HiOutlineThumbUp
+                                                            size={18}
+                                                        />
+                                                    )}
+
                                                     <Typography variant="label">
                                                         {upVotes}
                                                     </Typography>
                                                 </button>
-                                                <button className="flex items-center gap-1.5 text-red-600">
-                                                    <HiOutlineThumbDown
-                                                        size={18}
-                                                    />
+                                                <button
+                                                    onClick={() => {
+                                                        const alreadyDownVoted =
+                                                            isDownVoted(
+                                                                thread?.downVotesBy
+                                                            );
+                                                        if (!authUser) {
+                                                            return toast({
+                                                                title: 'Cannot do that',
+                                                                description:
+                                                                    'You must login first to like this thread',
+                                                                variant:
+                                                                    'destructive',
+                                                            });
+                                                        }
+                                                        if (alreadyDownVoted) {
+                                                            return dispatch(
+                                                                asycnThreadsNeutralVote(
+                                                                    {
+                                                                        threadId:
+                                                                            thread.id,
+                                                                    }
+                                                                )
+                                                            );
+                                                        }
+                                                        return dispatch(
+                                                            asycnThreadsDownVote(
+                                                                {
+                                                                    threadId:
+                                                                        thread?.id,
+                                                                }
+                                                            )
+                                                        );
+                                                    }}
+                                                    className="flex items-center gap-1.5 text-red-600"
+                                                >
+                                                    {isDownVoted(
+                                                        thread?.downVotesBy
+                                                    ) ? (
+                                                        <HiThumbDown
+                                                            size={18}
+                                                        />
+                                                    ) : (
+                                                        <HiOutlineThumbDown
+                                                            size={18}
+                                                        />
+                                                    )}
+
                                                     <Typography variant="label">
                                                         {downVotes}
                                                     </Typography>
