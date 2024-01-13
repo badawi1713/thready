@@ -89,6 +89,85 @@ const threadDetailReducer = (state = initialState, action = {}) => {
             }
             return state;
         }
+
+        case actionTypes.POST_THREAD_COMMENT_UP_VOTE: {
+            const comments = state.threadDetail?.comments.map((comment) => {
+                if (comment?.id === action.payload.commentId) {
+                    return {
+                        ...comment,
+                        upVotesBy: comment?.upVotesBy.includes(
+                            action.payload.userId
+                        )
+                            ? comment.upVotesBy
+                            : comment.upVotesBy.concat([action.payload.userId]),
+                    };
+                }
+                return comment;
+            });
+            return {
+                ...state,
+                threadDetail: {
+                    ...state.threadDetail,
+                    comments,
+                },
+            };
+        }
+        case actionTypes.POST_THREAD_COMMENT_NEUTRAL_VOTE: {
+            const comments = state.threadDetail?.comments.map((comment) => {
+                if (comment?.id === action.payload.commentId) {
+                    return {
+                        ...comment,
+                        upVotesBy: comment?.upVotesBy.includes(
+                            action.payload.userId
+                        )
+                            ? comment.upVotesBy.filter(
+                                  (id) => id !== action.payload.userId
+                              )
+                            : comment.upVotesBy,
+                        downVotesBy: comment?.downVotesBy.includes(
+                            action.payload.userId
+                        )
+                            ? comment.downVotesBy.filter(
+                                  (id) => id !== action.payload.userId
+                              )
+                            : comment.downVotesBy,
+                    };
+                }
+                return comment;
+            });
+            return {
+                ...state,
+                threadDetail: {
+                    ...state.threadDetail,
+                    comments,
+                },
+            };
+        }
+        case actionTypes.POST_THREAD_COMMENT_DOWN_VOTE: {
+            const comments = state.threadDetail?.comments.map((comment) => {
+                if (comment?.id === action.payload.commentId) {
+                    return {
+                        ...comment,
+                        downVotesBy: comment?.downVotesBy.includes(
+                            action.payload.userId
+                        )
+                            ? comment.downVotesBy
+                            : comment.downVotesBy.concat([
+                                  action.payload.userId,
+                              ]),
+                    };
+                }
+                return comment;
+            });
+            return {
+                ...state,
+                threadDetail: {
+                    ...state.threadDetail,
+                    comments,
+                },
+            };
+        }
+
         default:
             return state;
     }

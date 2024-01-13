@@ -8,6 +8,9 @@ const actionTypes = {
     POST_THREAD_DETAIL_DOWN_VOTE: 'POST_THREAD_DETAIL_DOWN_VOTE',
     POST_THREAD_DETAIL_NEUTRAL_VOTE: 'POST_THREAD_DETAIL_NEUTRAL_VOTE',
     POST_THREAD_DETAIL_COMMENT: 'POST_THREAD_DETAIL_COMMENT',
+    POST_THREAD_COMMENT_UP_VOTE: 'POST_THREAD_COMMENT_UP_VOTE',
+    POST_THREAD_COMMENT_DOWN_VOTE: 'POST_THREAD_COMMENT_DOWN_VOTE',
+    POST_THREAD_COMMENT_NEUTRAL_VOTE: 'POST_THREAD_COMMENT_NEUTRAL_VOTE',
 };
 
 const handleThreadDetailUpVoteActionCreator = ({
@@ -16,6 +19,19 @@ const handleThreadDetailUpVoteActionCreator = ({
 }) => {
     return {
         type: actionTypes.POST_THREAD_DETAIL_UP_VOTE,
+        payload: {
+            threadId,
+            userId,
+        },
+    };
+};
+
+const handleThreadDetailDownVoteActionCreator = ({
+    threadId = '',
+    userId = '',
+}) => {
+    return {
+        type: actionTypes.POST_THREAD_DETAIL_DOWN_VOTE,
         payload: {
             threadId,
             userId,
@@ -36,14 +52,40 @@ const handleThreadDetailNeutralVoteActionCreator = ({
     };
 };
 
-const handleThreadDetailDownVoteActionCreator = ({
-    threadId = '',
+const handleThreadCommentUpVoteActionCreator = ({
+    commentId = '',
     userId = '',
 }) => {
     return {
-        type: actionTypes.POST_THREAD_DETAIL_DOWN_VOTE,
+        type: actionTypes.POST_THREAD_COMMENT_UP_VOTE,
         payload: {
-            threadId,
+            commentId,
+            userId,
+        },
+    };
+};
+
+const handleThreadCommentDownVoteActionCreator = ({
+    commentId = '',
+    userId = '',
+}) => {
+    return {
+        type: actionTypes.POST_THREAD_COMMENT_DOWN_VOTE,
+        payload: {
+            userId,
+            commentId,
+        },
+    };
+};
+
+const handleThreadCommentNeutralVoteActionCreator = ({
+    commentId = '',
+    userId = '',
+}) => {
+    return {
+        type: actionTypes.POST_THREAD_COMMENT_NEUTRAL_VOTE,
+        payload: {
+            commentId,
             userId,
         },
     };
@@ -123,7 +165,7 @@ const asycnThreadDetailDownVote = ({ threadId = '' }) => {
         );
         dispatch(
             handleThreadDetailDownVoteActionCreator({
-                threadId: '',
+                threadId,
                 userId: authUserReducer.id,
             })
         );
@@ -160,6 +202,87 @@ const asyncCreateThreadDetailComment = ({ threadId = '', content = '' }) => {
     };
 };
 
+const asycnThreadCommentUpVote = ({ threadId = '', commentId = '' }) => {
+    return async (dispatch, getState) => {
+        const { authUserReducer } = getState();
+        dispatch(
+            handleThreadCommentNeutralVoteActionCreator({
+                commentId,
+                userId: authUserReducer.id,
+            })
+        );
+        dispatch(
+            handleThreadCommentUpVoteActionCreator({
+                commentId,
+                userId: authUserReducer.id,
+            })
+        );
+        try {
+            await threadServices.postThreadCommentUpVote(threadId, commentId);
+        } catch (error) {
+            dispatch(
+                handleThreadCommentNeutralVoteActionCreator({
+                    commentId: '',
+                    userId: authUserReducer.id,
+                })
+            );
+        }
+    };
+};
+
+const asycnThreadCommentNeutralVote = ({ threadId = '', commentId }) => {
+    return async (dispatch, getState) => {
+        const { authUserReducer } = getState();
+        dispatch(
+            handleThreadCommentNeutralVoteActionCreator({
+                commentId,
+                userId: authUserReducer.id,
+            })
+        );
+        try {
+            await threadServices.postThreadCommentNeutralVote(
+                threadId,
+                commentId
+            );
+        } catch (error) {
+            dispatch(
+                handleThreadCommentNeutralVoteActionCreator({
+                    commentId: '',
+                    userId: authUserReducer.id,
+                })
+            );
+        }
+    };
+};
+
+const asycnThreadCommentDownVote = ({ threadId = '', commentId }) => {
+    return async (dispatch, getState) => {
+        const { authUserReducer } = getState();
+        dispatch(
+            handleThreadCommentNeutralVoteActionCreator({
+                commentId,
+                userId: authUserReducer.id,
+            })
+        );
+        dispatch(
+            handleThreadCommentDownVoteActionCreator({
+                commentId,
+                userId: authUserReducer.id,
+            })
+        );
+        try {
+            await threadServices.postThreadCommentDownVote(threadId, commentId);
+        } catch (error) {
+            dispatch(
+                handleThreadCommentNeutralVoteActionCreator({
+                    commentId: '',
+                    userId: authUserReducer.id,
+                })
+            );
+        }
+    };
+};
+
 const asyncGetThreadDetail = (threadId = '') => {
     return async (dispatch) => {
         dispatch({
@@ -190,4 +313,7 @@ export {
     asycnThreadDetailNeutralVote,
     asycnThreadDetailDownVote,
     asyncCreateThreadDetailComment,
+    asycnThreadCommentUpVote,
+    asycnThreadCommentDownVote,
+    asycnThreadCommentNeutralVote,
 };

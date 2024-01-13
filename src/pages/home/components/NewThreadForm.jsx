@@ -72,7 +72,7 @@ function NewThreadForm() {
                         </Avatar>
 
                         <Typography variant="body1">
-                            Whats on your thought?
+                            {`What's on your thought?`}
                         </Typography>
                     </div>
                 </CardHeader>

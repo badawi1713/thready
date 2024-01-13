@@ -1,17 +1,3 @@
-import useScreenSize from '@/hooks/useScreenSize';
-import { getInitials, postedAt, screens } from '@/lib/utils';
-import {
-    HiArrowLeft,
-    HiOutlineCalendar,
-    HiOutlineChat,
-    HiOutlineThumbDown,
-    HiOutlineThumbUp,
-    HiThumbDown,
-    HiThumbUp,
-} from 'react-icons/hi';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
-import parse from 'html-react-parser';
 import Sidebar from '@/components/shared/sidebar.jsx';
 import TabBar from '@/components/shared/tab-bar.jsx';
 import {
@@ -34,17 +20,34 @@ import {
     TooltipTrigger,
     Typography,
 } from '@/components/ui';
-import { useCallback, useEffect, useRef } from 'react';
+import useScreenSize from '@/hooks/useScreenSize';
+import { toast } from '@/hooks/useToast';
+import { formatDateTime, getInitials, postedAt, screens } from '@/lib/utils';
 import {
-    asyncGetThreadDetail,
+    asycnThreadCommentDownVote,
+    asycnThreadCommentNeutralVote,
+    asycnThreadCommentUpVote,
     asycnThreadDetailDownVote,
     asycnThreadDetailNeutralVote,
     asycnThreadDetailUpVote,
     asyncCreateThreadDetailComment,
+    asyncGetThreadDetail,
 } from '@/store/reducers/thread-detail-reducer/action';
-import { toast } from '@/hooks/useToast';
 import { yupResolver } from '@hookform/resolvers/yup';
+import parse from 'html-react-parser';
+import { useCallback, useEffect, useRef } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
+import {
+    HiArrowLeft,
+    HiOutlineCalendar,
+    HiOutlineChat,
+    HiOutlineThumbDown,
+    HiOutlineThumbUp,
+    HiThumbDown,
+    HiThumbUp,
+} from 'react-icons/hi';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
 
 const schema = yup.object().shape({
@@ -169,7 +172,10 @@ function ThreadDetail() {
                                                 </Typography>
                                             </TooltipTrigger>
                                             <TooltipContent>
-                                                {threadDetail?.createdAt}
+                                                {formatDateTime(
+                                                    threadDetail.createdAt ||
+                                                        new Date()
+                                                )}
                                             </TooltipContent>
                                         </Tooltip>
                                     </div>
@@ -191,7 +197,7 @@ function ThreadDetail() {
                                                     return toast({
                                                         title: 'Cannot do that',
                                                         description:
-                                                            'You must login first to like this thread',
+                                                            'You must login first to vote this thread',
                                                         variant: 'destructive',
                                                     });
                                                 }
@@ -236,7 +242,7 @@ function ThreadDetail() {
                                                     return toast({
                                                         title: 'Cannot do that',
                                                         description:
-                                                            'You must login first to like this thread',
+                                                            'You must login first to vote this thread',
                                                         variant: 'destructive',
                                                     });
                                                 }
@@ -375,33 +381,182 @@ function ThreadDetail() {
                     <section className="py-6 px-8 flex flex-col gap-4">
                         <Typography variant="body1">Comments</Typography>
                         {/* Comment List */}
-                        {threadDetail?.comments?.map((comment) => {
-                            return (
-                                <Card key={comment?.id}>
-                                    <CardHeader>
-                                        <div className="flex items-center gap-3">
-                                            <Avatar>
-                                                <AvatarImage
-                                                    src={comment?.owner?.avatar}
-                                                />
-                                                <AvatarFallback>
-                                                    {getInitials(
-                                                        comment?.owner?.name
-                                                    )}
-                                                </AvatarFallback>
-                                            </Avatar>
+                        {threadDetail?.comments?.length > 0 ? (
+                            threadDetail?.comments?.map((comment) => {
+                                return (
+                                    <Card key={comment?.id}>
+                                        <CardHeader>
+                                            <div className="flex items-center gap-3">
+                                                <Avatar>
+                                                    <AvatarImage
+                                                        src={
+                                                            comment?.owner
+                                                                ?.avatar
+                                                        }
+                                                    />
+                                                    <AvatarFallback>
+                                                        {getInitials(
+                                                            comment?.owner?.name
+                                                        )}
+                                                    </AvatarFallback>
+                                                </Avatar>
 
-                                            <Typography variant="body1">
-                                                {comment?.owner?.name}
-                                            </Typography>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        {parse(comment?.content || '-')}
-                                    </CardContent>
-                                </Card>
-                            );
-                        })}
+                                                <div>
+                                                    <Typography variant="body1">
+                                                        {comment?.owner?.name}
+                                                    </Typography>
+                                                    <Typography
+                                                        className="text-gray-400"
+                                                        variant="caption"
+                                                    >
+                                                        {formatDateTime(
+                                                            comment?.createdAt
+                                                        )}
+                                                    </Typography>
+                                                </div>
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent>
+                                            {parse(comment?.content || '-')}
+                                        </CardContent>
+                                        <CardFooter>
+                                            <section className="flex items-center gap-3">
+                                                <button
+                                                    onClick={() => {
+                                                        const alreadyUpVoted =
+                                                            isUpVoted(
+                                                                comment?.upVotesBy
+                                                            );
+                                                        if (!authUser) {
+                                                            return toast({
+                                                                title: 'Cannot do that',
+                                                                description:
+                                                                    'You must login first to vote this thread',
+                                                                variant:
+                                                                    'destructive',
+                                                            });
+                                                        }
+                                                        if (alreadyUpVoted) {
+                                                            return dispatch(
+                                                                asycnThreadCommentNeutralVote(
+                                                                    {
+                                                                        threadId:
+                                                                            threadDetail?.id,
+                                                                        commentId:
+                                                                            comment?.id,
+                                                                    }
+                                                                )
+                                                            );
+                                                        }
+                                                        return dispatch(
+                                                            asycnThreadCommentUpVote(
+                                                                {
+                                                                    threadId:
+                                                                        threadDetail?.id,
+                                                                    commentId:
+                                                                        comment?.id,
+                                                                }
+                                                            )
+                                                        );
+                                                    }}
+                                                    className="flex items-center gap-1.5 text-green-600"
+                                                >
+                                                    {isUpVoted(
+                                                        comment?.upVotesBy
+                                                    ) ? (
+                                                        <HiThumbUp size={18} />
+                                                    ) : (
+                                                        <HiOutlineThumbUp
+                                                            size={18}
+                                                        />
+                                                    )}
+
+                                                    <Typography variant="label">
+                                                        {comment?.upVotesBy
+                                                            ?.length || 0}
+                                                    </Typography>
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        const alreadyDownVoted =
+                                                            isDownVoted(
+                                                                comment?.downVotesBy
+                                                            );
+                                                        if (!authUser) {
+                                                            return toast({
+                                                                title: 'Cannot do that',
+                                                                description:
+                                                                    'You must login first to vote this thread',
+                                                                variant:
+                                                                    'destructive',
+                                                            });
+                                                        }
+                                                        if (alreadyDownVoted) {
+                                                            return dispatch(
+                                                                asycnThreadCommentNeutralVote(
+                                                                    {
+                                                                        threadId:
+                                                                            threadDetail?.id,
+                                                                        commentId:
+                                                                            comment?.id,
+                                                                    }
+                                                                )
+                                                            );
+                                                        }
+                                                        return dispatch(
+                                                            asycnThreadCommentDownVote(
+                                                                {
+                                                                    threadId:
+                                                                        threadDetail?.id,
+                                                                    commentId:
+                                                                        comment?.id,
+                                                                }
+                                                            )
+                                                        );
+                                                    }}
+                                                    className="flex items-center gap-1.5 text-red-600"
+                                                >
+                                                    {isDownVoted(
+                                                        comment?.downVotesBy
+                                                    ) ? (
+                                                        <HiThumbDown
+                                                            size={18}
+                                                        />
+                                                    ) : (
+                                                        <HiOutlineThumbDown
+                                                            size={18}
+                                                        />
+                                                    )}
+
+                                                    <Typography variant="label">
+                                                        {comment?.downVotesBy
+                                                            ?.length || 0}
+                                                    </Typography>
+                                                </button>
+                                            </section>
+                                        </CardFooter>
+                                    </Card>
+                                );
+                            })
+                        ) : (
+                            <div className="flex items-center gap-3">
+                                <Typography className="text-gray-500">
+                                    There is no comment yet!
+                                </Typography>
+                                {!authUser && (
+                                    <Typography>
+                                        You must{' '}
+                                        <Link
+                                            to="/login"
+                                            className="underline underline-offset-8"
+                                        >
+                                            Login
+                                        </Link>{' '}
+                                        first to post your comment!
+                                    </Typography>
+                                )}
+                            </div>
+                        )}
                     </section>
                 )}
             </main>

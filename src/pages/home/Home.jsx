@@ -19,7 +19,7 @@ import {
 } from '@/components/ui';
 import useScreenSize from '@/hooks/useScreenSize';
 import { toast } from '@/hooks/useToast';
-import { getInitials, postedAt, screens } from '@/lib/utils';
+import { formatDateTime, getInitials, postedAt, screens } from '@/lib/utils';
 import {
     asycnThreadsDownVote,
     asycnThreadsNeutralVote,
@@ -195,7 +195,9 @@ function Home() {
                                                         </Typography>
                                                     </TooltipTrigger>
                                                     <TooltipContent>
-                                                        {thread.createdAt}
+                                                        {formatDateTime(
+                                                            thread.createdAt
+                                                        )}
                                                     </TooltipContent>
                                                 </Tooltip>
                                             </div>
@@ -219,7 +221,7 @@ function Home() {
                                                             return toast({
                                                                 title: 'Cannot do that',
                                                                 description:
-                                                                    'You must login first to like this thread',
+                                                                    'You must login first to vote this thread',
                                                                 variant:
                                                                     'destructive',
                                                             });
@@ -267,7 +269,7 @@ function Home() {
                                                             return toast({
                                                                 title: 'Cannot do that',
                                                                 description:
-                                                                    'You must login first to like this thread',
+                                                                    'You must login first to vote this thread',
                                                                 variant:
                                                                     'destructive',
                                                             });
