@@ -14,7 +14,7 @@ const allThreadReducer = (state = initialState, action = {}) => {
             return { ...state, loading: false, threads: action.payload };
         case actionTypes.GET_ALL_THREADS_FAILED:
             return { ...state, loading: false, error: action.payload };
-        case actionTypes.HANDLE_THREADS_UP_VOTE: {
+        case actionTypes.POST_THREADS_UP_VOTE: {
             const threads = state.threads.map((thread) => {
                 if (thread?.id === action.payload.threadId) {
                     return {
@@ -33,7 +33,7 @@ const allThreadReducer = (state = initialState, action = {}) => {
                 threads,
             };
         }
-        case actionTypes.HANDLE_THREADS_NEUTRAL_VOTE: {
+        case actionTypes.POST_THREADS_NEUTRAL_VOTE: {
             const threads = state.threads.map((thread) => {
                 if (thread?.id === action.payload.threadId) {
                     return {
@@ -61,7 +61,7 @@ const allThreadReducer = (state = initialState, action = {}) => {
                 threads,
             };
         }
-        case actionTypes.HANDLE_THREADS_DOWN_VOTE: {
+        case actionTypes.POST_THREADS_DOWN_VOTE: {
             const threads = state.threads.map((thread) => {
                 if (thread?.id === action.payload.threadId) {
                     return {

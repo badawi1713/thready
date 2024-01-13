@@ -27,7 +27,7 @@ import {
     asyncGetAllThreads,
 } from '@/store/reducers/all-thread-reducer/action';
 import parse from 'html-react-parser';
-import { useCallback, useEffect, useRef } from 'react';
+import { memo, useCallback, useEffect, useRef } from 'react';
 import {
     HiHashtag,
     HiOutlineCalendar,
@@ -443,4 +443,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default memo(Home);

@@ -11,6 +11,7 @@ import useScreenSize from '@/hooks/useScreenSize';
 import { useToast } from '@/hooks/useToast';
 import { mainRoutes, screens } from '@/lib/utils';
 import { asyncUnsetAuthUser } from '@/store/reducers/auth-user-reducer/action';
+import { memo } from 'react';
 import { Typography } from '../ui/typography';
 import { useTheme } from '../../context/theme-context/ThemeContext';
 import Confirmation from './confirmation';
@@ -101,4 +102,4 @@ function TabBar() {
     );
 }
 
-export default TabBar;
+export default memo(TabBar);

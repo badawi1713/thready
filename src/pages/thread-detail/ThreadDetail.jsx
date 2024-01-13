@@ -6,6 +6,8 @@ import {
     HiOutlineChat,
     HiOutlineThumbDown,
     HiOutlineThumbUp,
+    HiThumbDown,
+    HiThumbUp,
 } from 'react-icons/hi';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -23,6 +25,7 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
+    FormMessage,
     Separator,
     Spinner,
     Textarea,
@@ -32,8 +35,21 @@ import {
     Typography,
 } from '@/components/ui';
 import { useCallback, useEffect, useRef } from 'react';
-import { asyncGetThreadDetail } from '@/store/reducers/thread-detail-reducer/action';
+import {
+    asyncGetThreadDetail,
+    asycnThreadDetailDownVote,
+    asycnThreadDetailNeutralVote,
+    asycnThreadDetailUpVote,
+    asyncCreateThreadDetailComment,
+} from '@/store/reducers/thread-detail-reducer/action';
 import { toast } from '@/hooks/useToast';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
+import * as yup from 'yup';
+
+const schema = yup.object().shape({
+    content: yup.string().required('Your comment must be filled'),
+});
 
 function ThreadDetail() {
     const dispatch = useDispatch();
@@ -49,6 +65,45 @@ function ThreadDetail() {
     );
 
     const isMounted = useRef(true);
+
+    const formMethods = useForm({
+        defaultValues: {
+            content: '',
+        },
+        resolver: yupResolver(schema),
+    });
+
+    const { handleSubmit, control, formState, reset } = formMethods;
+
+    const { errors, isSubmitting } = formState;
+
+    const handleSave = handleSubmit(async (formData) => {
+        const payload = {
+            threadId: threadDetail?.id,
+            content: formData.content,
+        };
+        const response = await dispatch(
+            asyncCreateThreadDetailComment(payload)
+        );
+        if (response) {
+            reset({
+                content: '',
+            });
+        }
+    });
+
+    const isUpVoted = useCallback(
+        (upVotes = []) => upVotes?.includes(authUser?.id),
+        [authUser?.id]
+    );
+
+    const isDownVoted = useCallback(
+        (downVotes = []) => downVotes?.includes(authUser?.id),
+        [authUser?.id]
+    );
+
+    const downVotes = threadDetail?.downVotesBy?.length || 0;
+    const upVotes = threadDetail?.upVotesBy?.length || 0;
 
     const handleGoBack = () => {
         navigation('/');
@@ -114,7 +169,7 @@ function ThreadDetail() {
                                                 </Typography>
                                             </TooltipTrigger>
                                             <TooltipContent>
-                                                {threadDetail.createdAt}
+                                                {threadDetail?.createdAt}
                                             </TooltipContent>
                                         </Tooltip>
                                     </div>
@@ -128,6 +183,10 @@ function ThreadDetail() {
                                     <section className="flex items-center gap-3">
                                         <button
                                             onClick={() => {
+                                                const alreadyUpVoted =
+                                                    isUpVoted(
+                                                        threadDetail?.upVotesBy
+                                                    );
                                                 if (!authUser) {
                                                     return toast({
                                                         title: 'Cannot do that',
@@ -136,18 +195,43 @@ function ThreadDetail() {
                                                         variant: 'destructive',
                                                     });
                                                 }
-                                                return false;
+                                                if (alreadyUpVoted) {
+                                                    return dispatch(
+                                                        asycnThreadDetailNeutralVote(
+                                                            {
+                                                                threadId:
+                                                                    threadDetail?.id,
+                                                            }
+                                                        )
+                                                    );
+                                                }
+                                                return dispatch(
+                                                    asycnThreadDetailUpVote({
+                                                        threadId:
+                                                            threadDetail?.id,
+                                                    })
+                                                );
                                             }}
                                             className="flex items-center gap-1.5 text-green-600"
                                         >
-                                            <HiOutlineThumbUp size={18} />
+                                            {isUpVoted(
+                                                threadDetail?.upVotesBy
+                                            ) ? (
+                                                <HiThumbUp size={18} />
+                                            ) : (
+                                                <HiOutlineThumbUp size={18} />
+                                            )}
+
                                             <Typography variant="label">
-                                                {threadDetail?.upVotesBy
-                                                    ?.length || 0}
+                                                {upVotes}
                                             </Typography>
                                         </button>
                                         <button
                                             onClick={() => {
+                                                const alreadyDownVoted =
+                                                    isDownVoted(
+                                                        threadDetail?.downVotesBy
+                                                    );
                                                 if (!authUser) {
                                                     return toast({
                                                         title: 'Cannot do that',
@@ -156,21 +240,42 @@ function ThreadDetail() {
                                                         variant: 'destructive',
                                                     });
                                                 }
-                                                return false;
+                                                if (alreadyDownVoted) {
+                                                    return dispatch(
+                                                        asycnThreadDetailNeutralVote(
+                                                            {
+                                                                threadId:
+                                                                    threadDetail?.id,
+                                                            }
+                                                        )
+                                                    );
+                                                }
+                                                return dispatch(
+                                                    asycnThreadDetailDownVote({
+                                                        threadId:
+                                                            threadDetail?.id,
+                                                    })
+                                                );
                                             }}
                                             className="flex items-center gap-1.5 text-red-600"
                                         >
-                                            <HiOutlineThumbDown size={18} />
+                                            {isDownVoted(
+                                                threadDetail?.downVotesBy
+                                            ) ? (
+                                                <HiThumbDown size={18} />
+                                            ) : (
+                                                <HiOutlineThumbDown size={18} />
+                                            )}
+
                                             <Typography variant="label">
-                                                {threadDetail?.downVotesBy
-                                                    ?.length || 0}
+                                                {downVotes}
                                             </Typography>
                                         </button>
-                                        <button className="flex items-center gap-1.5">
+                                        <button className="flex items-center gap-1.5 cursor-auto">
                                             <HiOutlineChat size={18} />
                                             <Typography variant="label">
-                                                {threadDetail?.comments
-                                                    ?.length || 0}
+                                                {threadDetail?.totalComments ||
+                                                    0}
                                             </Typography>
                                         </button>
                                     </section>
@@ -190,102 +295,113 @@ function ThreadDetail() {
                 {authUser && !loading && !error && (
                     <section className="py-6 px-8 border-b">
                         <Card>
-                            <CardHeader>
-                                <div className="flex items-center gap-3">
-                                    <Avatar>
-                                        <AvatarImage src={authUser?.avatar} />
-                                        <AvatarFallback>
-                                            {getInitials(authUser?.name)}
-                                        </AvatarFallback>
-                                    </Avatar>
+                            <FormProvider {...formMethods}>
+                                <form onSubmit={handleSave}>
+                                    <CardHeader>
+                                        <div className="flex items-center gap-3">
+                                            <Avatar>
+                                                <AvatarImage
+                                                    src={authUser?.avatar}
+                                                />
+                                                <AvatarFallback>
+                                                    {getInitials(
+                                                        authUser?.name
+                                                    )}
+                                                </AvatarFallback>
+                                            </Avatar>
 
-                                    <Typography variant="body1">
-                                        Replying to {threadDetail?.owner?.name}
-                                    </Typography>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <form>
-                                    <Textarea placeholder="Post your reply" />
+                                            <Typography variant="body1">
+                                                Replying to{' '}
+                                                {threadDetail?.owner?.name}
+                                            </Typography>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <Controller
+                                            name="content"
+                                            control={control}
+                                            render={({
+                                                field: {
+                                                    onChange,
+                                                    value,
+                                                    ...field
+                                                },
+                                            }) => {
+                                                return (
+                                                    <div className="flex flex-col w-full gap-2">
+                                                        <Textarea
+                                                            placeholder="Write your comment..."
+                                                            {...field}
+                                                            id="content"
+                                                            onChange={(e) =>
+                                                                onChange(
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                            value={value}
+                                                        />
+                                                        {errors?.content
+                                                            ?.message && (
+                                                            <FormMessage>
+                                                                {
+                                                                    errors
+                                                                        ?.content
+                                                                        ?.message
+                                                                }
+                                                            </FormMessage>
+                                                        )}
+                                                    </div>
+                                                );
+                                            }}
+                                        />
+                                    </CardContent>
+                                    <CardFooter className="flex justify-end">
+                                        <Button
+                                            disabled={isSubmitting}
+                                            className="self-end"
+                                        >
+                                            {isSubmitting
+                                                ? 'Replying'
+                                                : 'Reply'}
+                                        </Button>
+                                    </CardFooter>
                                 </form>
-                            </CardContent>
-                            <CardFooter className="flex justify-end">
-                                <Button>Reply</Button>
-                            </CardFooter>
+                            </FormProvider>
                         </Card>
                     </section>
                 )}
                 {!loading && !error && (
                     <section className="py-6 px-8 flex flex-col gap-4">
                         <Typography variant="body1">Comments</Typography>
-                        <Card>
-                            <CardHeader>
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <Avatar>
-                                        <AvatarImage />
-                                        <AvatarFallback>DB</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <Typography variant="label">
-                                            @_dbadawi
-                                        </Typography>
-                                        <div className="flex items-center gap-1.5">
-                                            <HiOutlineCalendar />
-                                            <Typography variant="caption">
-                                                107 hari yang lalu
+                        {/* Comment List */}
+                        {threadDetail?.comments?.map((comment) => {
+                            return (
+                                <Card key={comment?.id}>
+                                    <CardHeader>
+                                        <div className="flex items-center gap-3">
+                                            <Avatar>
+                                                <AvatarImage
+                                                    src={comment?.owner?.avatar}
+                                                />
+                                                <AvatarFallback>
+                                                    {getInitials(
+                                                        comment?.owner?.name
+                                                    )}
+                                                </AvatarFallback>
+                                            </Avatar>
+
+                                            <Typography variant="body1">
+                                                {comment?.owner?.name}
                                             </Typography>
                                         </div>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <p>Halo, saya ikutan komentar di sini!</p>
-                            </CardContent>
-                            <CardFooter>
-                                <div className="flex items-center w-full justify-between flex-wrap gap-3">
-                                    <section className="flex items-center gap-3">
-                                        <button
-                                            onClick={() => {
-                                                if (!authUser) {
-                                                    return toast({
-                                                        title: 'Cannot do that',
-                                                        description:
-                                                            'You must login first to like this comment',
-                                                        variant: 'destructive',
-                                                    });
-                                                }
-                                                return false;
-                                            }}
-                                            className="flex items-center gap-1.5 text-green-600"
-                                        >
-                                            <HiOutlineThumbUp size={18} />
-                                            <Typography variant="label">
-                                                10
-                                            </Typography>
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                if (!authUser) {
-                                                    return toast({
-                                                        title: 'Cannot do that',
-                                                        description:
-                                                            'You must login first to like this comment',
-                                                        variant: 'destructive',
-                                                    });
-                                                }
-                                                return false;
-                                            }}
-                                            className="flex items-center gap-1.5 text-red-600"
-                                        >
-                                            <HiOutlineThumbDown size={18} />
-                                            <Typography variant="label">
-                                                0
-                                            </Typography>
-                                        </button>
-                                    </section>
-                                </div>
-                            </CardFooter>
-                        </Card>
+                                    </CardHeader>
+                                    <CardContent>
+                                        {parse(comment?.content || '-')}
+                                    </CardContent>
+                                </Card>
+                            );
+                        })}
                     </section>
                 )}
             </main>

@@ -10,21 +10,12 @@ import SplashScreen from './splash-screen';
 
 function RootRouter() {
     const authUser = useSelector((state) => state?.authUserReducer);
-    const { isPreload } = useSelector((state) => state.isPreloadReducer);
+    const { isPreload = false } = useSelector(
+        (state) => state.isPreloadReducer
+    );
 
     if (isPreload) {
         return <SplashScreen />;
-    }
-
-    if (authUser) {
-        return (
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/thread/:id" element={<ThreadDetail />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="*" element={<Page404 />} />
-            </Routes>
-        );
     }
 
     return (
@@ -32,8 +23,12 @@ function RootRouter() {
             <Route path="/" element={<Home />} />
             <Route path="/thread/:id" element={<ThreadDetail />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            {!authUser && (
+                <>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                </>
+            )}
             <Route path="*" element={<Page404 />} />
         </Routes>
     );

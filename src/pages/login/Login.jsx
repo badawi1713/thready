@@ -12,7 +12,6 @@ import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { Button, FormMessage, Input, Label, Typography } from '@/components/ui';
-import { asyncPreloadProcess } from '@/store/reducers/is-preload-reducer/action';
 
 const schema = yup.object().shape({
     email: yup
@@ -51,7 +50,6 @@ function Login() {
         };
         const response = await dispatch(asyncSetAuthUser(payload));
         if (response) {
-            dispatch(asyncPreloadProcess());
             navigate('/', { replace: true });
         }
         setLoading(false);

@@ -1,4 +1,5 @@
 import services from '@/lib/services';
+import authServices from '@/lib/services/auth-services';
 import { setAuthUserActionCreator } from '../auth-user-reducer/action';
 
 const actionTypes = {
@@ -18,12 +19,16 @@ function asyncPreloadProcess() {
     return async (dispatch) => {
         dispatch(setIsPreloadActionCreator(true));
         try {
-            const authUser = await services.getOwnProfile();
-            await dispatch(setAuthUserActionCreator(authUser || null));
+            const token = await authServices.getAccessToken();
+            if (token) {
+                const authUser = await services.getOwnProfile();
+                return dispatch(setAuthUserActionCreator(authUser || null));
+            }
+            return dispatch(setAuthUserActionCreator(null));
         } catch (error) {
-            dispatch(setAuthUserActionCreator(null));
+            return dispatch(setAuthUserActionCreator(null));
         } finally {
-            dispatch(setIsPreloadActionCreator(false));
+            setTimeout(() => dispatch(setIsPreloadActionCreator(false)), 1000);
         }
     };
 }

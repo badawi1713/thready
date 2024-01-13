@@ -39,22 +39,6 @@ const addNewThread = async (data) => {
     }
 };
 
-const getThreadDetailById = async (threadId) => {
-    try {
-        const response = await axios.get(`/threads/${threadId}`);
-        const data = response?.data?.data?.detailThread || null;
-        return { data, error: '' };
-    } catch (error) {
-        const errorMessage = error?.response?.data?.message || error?.message;
-        toast({
-            title: 'Get Thread Detail Failed',
-            description: errorMessage,
-            variant: 'destructive',
-        });
-        return { data: [], error: errorMessage };
-    }
-};
-
 const postThreadUpVote = async (threadId = '') => {
     try {
         await axios.post(`/threads/${threadId}/up-vote`);
@@ -100,13 +84,99 @@ const postThreadNeutralVote = async (threadId = '') => {
     }
 };
 
+const getThreadDetailById = async (threadId) => {
+    try {
+        const response = await axios.get(`/threads/${threadId}`);
+        const data = response?.data?.data?.detailThread || null;
+        return { data, error: '' };
+    } catch (error) {
+        const errorMessage = error?.response?.data?.message || error?.message;
+        toast({
+            title: 'Get Thread Detail Failed',
+            description: errorMessage,
+            variant: 'destructive',
+        });
+        return { data: [], error: errorMessage };
+    }
+};
+
+const postThreadCommentUpVote = async (threadId = '', commentId = '') => {
+    try {
+        await axios.post(`/threads/${threadId}/comments/${commentId}/up-vote`);
+        return true;
+    } catch (error) {
+        const errorMessage = error?.response?.data?.message || error?.message;
+        toast({
+            title: 'Failed to Up Vote the Comment',
+            description: errorMessage,
+            variant: 'destructive',
+        });
+        return false;
+    }
+};
+
+const postThreadCommentDownVote = async (threadId = '', commentId = '') => {
+    try {
+        await axios.post(
+            `/threads/${threadId}/comments/${commentId}/down-vote`
+        );
+        return true;
+    } catch (error) {
+        const errorMessage = error?.response?.data?.message || error?.message;
+        toast({
+            title: 'Failed to Down Vote the Comment',
+            description: errorMessage,
+            variant: 'destructive',
+        });
+        return false;
+    }
+};
+
+const postThreadCommentNeutralVote = async (threadId = '', commentId = '') => {
+    try {
+        await axios.post(
+            `/threads/${threadId}/comments/${commentId}/neutral-vote`
+        );
+        return true;
+    } catch (error) {
+        const errorMessage = error?.response?.data?.message || error?.message;
+        toast({
+            title: "Failed to Change Comment's Vote",
+            description: errorMessage,
+            variant: 'destructive',
+        });
+        return false;
+    }
+};
+
+const postThreadDetailComment = async (threadId = '', content = '') => {
+    try {
+        const response = await axios.post(`/threads/${threadId}/comments`, {
+            content,
+        });
+        return response?.data?.data?.comment || null;
+    } catch (error) {
+        const errorMessage = error?.response?.data?.message || error?.message;
+        toast({
+            title: 'Failed to Add Comment',
+            description: errorMessage,
+            variant: 'destructive',
+        });
+        return false;
+    }
+};
+
 const threadServices = {
     getAllThreadsData,
     addNewThread,
-    getThreadDetailById,
     postThreadUpVote,
     postThreadDownVote,
     postThreadNeutralVote,
+    getThreadDetailById,
+    postThreadCommentUpVote,
+    postThreadCommentNeutralVote,
+    postThreadCommentDownVote,
+    postThreadDetailComment,
 };
 
 export default threadServices;

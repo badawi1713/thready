@@ -1,7 +1,7 @@
 import { actionTypes } from './action';
 
 const initialState = {
-    isPreload: false,
+    isPreload: true,
 };
 
 const isPreloadReducer = (state = initialState, action = {}) => {

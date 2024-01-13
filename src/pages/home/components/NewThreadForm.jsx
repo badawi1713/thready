@@ -16,7 +16,7 @@ import threadServices from '@/lib/services/thread-services';
 import { getInitials } from '@/lib/utils';
 import { asyncGetAllThreads } from '@/store/reducers/all-thread-reducer/action';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
@@ -58,6 +58,7 @@ function NewThreadForm() {
             });
         }
     });
+
     return (
         <section className="py-6 px-8 border-b">
             <Card>
@@ -179,4 +180,4 @@ function NewThreadForm() {
     );
 }
 
-export default NewThreadForm;
+export default memo(NewThreadForm);
