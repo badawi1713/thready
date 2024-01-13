@@ -287,9 +287,13 @@ function ThreadDetail() {
                                     </section>
                                     {threadDetail?.category && (
                                         <section className="flex items-center gap-3">
-                                            <Badge variant="outline">
-                                                #{threadDetail?.category}
-                                            </Badge>
+                                            <Link
+                                                to={`/?category=${threadDetail?.category}`}
+                                            >
+                                                <Badge variant="outline">
+                                                    #{threadDetail?.category}
+                                                </Badge>
+                                            </Link>
                                         </section>
                                     )}
                                 </div>
@@ -431,7 +435,7 @@ function ThreadDetail() {
                                                             return toast({
                                                                 title: 'Cannot do that',
                                                                 description:
-                                                                    'You must login first to vote this thread',
+                                                                    'You must login first to vote this comment',
                                                                 variant:
                                                                     'destructive',
                                                             });
@@ -486,7 +490,7 @@ function ThreadDetail() {
                                                             return toast({
                                                                 title: 'Cannot do that',
                                                                 description:
-                                                                    'You must login first to vote this thread',
+                                                                    'You must login first to vote this comment',
                                                                 variant:
                                                                     'destructive',
                                                             });

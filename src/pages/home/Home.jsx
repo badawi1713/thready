@@ -5,6 +5,7 @@ import {
     AvatarFallback,
     AvatarImage,
     Badge,
+    Button,
     Card,
     CardContent,
     CardFooter,
@@ -29,6 +30,7 @@ import {
 import parse from 'html-react-parser';
 import { memo, useCallback, useEffect, useRef } from 'react';
 import {
+    HiArrowLeft,
     HiHashtag,
     HiOutlineCalendar,
     HiOutlineChat,
@@ -56,7 +58,7 @@ function Home() {
     const categoryList = useSelector((state) => state.categoryListReducer);
 
     const searchParams = new URLSearchParams(window.location.search);
-    const categoryParams = searchParams.get('category');
+    const categoryParams = searchParams.get('category') || '';
 
     const filteredThreads = categoryParams
         ? threads?.filter((thread) => thread?.category === categoryParams)
@@ -76,6 +78,10 @@ function Home() {
         navigation(url);
     };
 
+    const handleGoBack = () => {
+        navigation('/');
+    };
+
     const getAllThreads = useCallback(() => {
         dispatch(asyncGetAllThreads());
     }, [dispatch]);
@@ -92,7 +98,25 @@ function Home() {
             {!isMobileScreen && <Sidebar />}
             <main className=" w-full flex-1 flex flex-col pb-20 md:pb-0 min-h-[100dvh]">
                 <section className="py-6 px-8 md:sticky md:top-0 bg-background  border-b z-10">
-                    <Typography variant="heading2">Home</Typography>
+                    {categoryParams ? (
+                        <div>
+                            <div className="flex items-center">
+                                <Button
+                                    onClick={handleGoBack}
+                                    variant="link"
+                                    className="flex items-center w-auto gap-2 p-0 text-lg"
+                                >
+                                    <HiArrowLeft size={18} />
+                                    Threads
+                                </Button>
+                            </div>
+                            <Typography variant="label">
+                                With category: {categoryParams}
+                            </Typography>
+                        </div>
+                    ) : (
+                        <Typography variant="heading2">Home</Typography>
+                    )}
                 </section>
                 {!loading && !error && (
                     <section className="py-6 px-8 border-b lg:hidden">
@@ -328,9 +352,13 @@ function Home() {
                                             </section>
                                             {thread?.category && (
                                                 <section className="flex items-center gap-3">
-                                                    <Badge variant="outline">
-                                                        #{thread?.category}
-                                                    </Badge>
+                                                    <Link
+                                                        to={`/?category=${thread?.category}`}
+                                                    >
+                                                        <Badge variant="outline">
+                                                            #{thread?.category}
+                                                        </Badge>
+                                                    </Link>
                                                 </section>
                                             )}
                                         </div>
