@@ -11,9 +11,9 @@ const allThreadReducer = (state = initialState, action = {}) => {
         case actionTypes.GET_ALL_THREADS_PENDING:
             return initialState;
         case actionTypes.GET_ALL_THREADS_SUCCESS:
-            return { ...state, loading: false, threads: action.payload };
+            return { loading: false, threads: action.payload, error: '' };
         case actionTypes.GET_ALL_THREADS_FAILED:
-            return { ...state, loading: false, error: action.payload };
+            return { loading: false, threads: [], error: action.payload };
         case actionTypes.POST_THREADS_UP_VOTE: {
             const threads = state.threads.map((thread) => {
                 if (thread?.id === action.payload.threadId) {

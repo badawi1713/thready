@@ -2,13 +2,21 @@ const actionTypes = {
     SET_CATEGORY_LIST: 'SET_CATEGORY_LIST',
 };
 
-const getCategoryListActionHandler = (categoryList = []) => {
-    return (dispatch) => {
-        dispatch({
-            type: actionTypes.SET_CATEGORY_LIST,
-            payload: categoryList,
-        });
+const getCategoryListActionCreator = (categoryList = []) => {
+    return {
+        type: actionTypes.SET_CATEGORY_LIST,
+        payload: categoryList,
     };
 };
 
-export { actionTypes, getCategoryListActionHandler };
+const asyncGetCategoryListActionHandler = (categoryList = []) => {
+    return (dispatch) => {
+        dispatch(getCategoryListActionCreator(categoryList));
+    };
+};
+
+export {
+    actionTypes,
+    asyncGetCategoryListActionHandler,
+    getCategoryListActionCreator,
+};

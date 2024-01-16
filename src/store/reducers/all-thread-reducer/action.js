@@ -1,6 +1,6 @@
 import sharedServices from '@/lib/services/shared-services';
 import threadServices from '@/lib/services/thread-services';
-import { getCategoryListActionHandler } from '../category-list-reducer/action';
+import { asyncGetCategoryListActionHandler } from '../category-list-reducer/action';
 
 const actionTypes = {
     GET_ALL_THREADS_PENDING: 'GET_ALL_THREADS_PENDING',
@@ -9,6 +9,20 @@ const actionTypes = {
     POST_THREADS_UP_VOTE: 'POST_THREADS_UP_VOTE',
     POST_THREADS_DOWN_VOTE: 'POST_THREADS_DOWN_VOTE',
     POST_THREADS_NEUTRAL_VOTE: 'POST_THREADS_NEUTRAL_VOTE',
+};
+
+const getThreadsErrorActionCreator = (errorMessage = '') => {
+    return {
+        type: actionTypes.GET_ALL_THREADS_FAILED,
+        payload: errorMessage,
+    };
+};
+
+const getThreadsActionCreator = (threads = []) => {
+    return {
+        type: actionTypes.GET_ALL_THREADS_SUCCESS,
+        payload: threads,
+    };
 };
 
 const handleThreadsUpVoteActionCreator = ({ threadId = '', userId = '' }) => {
@@ -141,18 +155,13 @@ const asyncGetAllThreads = () => {
                           };
                       })
                     : [];
-            dispatch(getCategoryListActionHandler(threadCategoryList));
-            dispatch({
-                type: actionTypes.GET_ALL_THREADS_SUCCESS,
-                payload: populateThreadAndUser,
-            });
+            dispatch(asyncGetCategoryListActionHandler(threadCategoryList));
+            dispatch(getThreadsActionCreator(populateThreadAndUser));
         } catch (error) {
             const errorMessage =
                 error?.response?.data?.message || error?.message;
-            dispatch({
-                type: actionTypes.GET_ALL_THREADS_FAILED,
-                payload: errorMessage,
-            });
+            dispatch(getThreadsErrorActionCreator(errorMessage));
+            alert(errorMessage);
         }
     };
 };
@@ -164,4 +173,8 @@ export {
     asycnThreadsNeutralVote,
     asycnThreadsDownVote,
     handleThreadsUpVoteActionCreator,
+    handleThreadsDownVoteActionCreator,
+    handleThreadsNeutralVoteActionCreator,
+    getThreadsActionCreator,
+    getThreadsErrorActionCreator,
 };

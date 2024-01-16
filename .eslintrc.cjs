@@ -4,11 +4,7 @@ module.exports = {
         es2021: true,
         node: true,
     },
-    extends: [
-        'airbnb',
-        'plugin:react/recommended',
-        'plugin:prettier/recommended',
-    ],
+    extends: ['airbnb', 'plugin:react/recommended', 'plugin:prettier/recommended', 'plugin:storybook/recommended'],
     settings: {
         'import/resolver': {
             alias: [['@', './src']],
