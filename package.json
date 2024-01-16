@@ -11,7 +11,8 @@
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build",
         "test": "vitest",
-        "e2e": "cypress run"
+        "e2e": "cypress run",
+        "ci:test": "vitest --no-watch && start-server-and-test dev http-get://0.0.0.0:5173 e2e"
     },
     "dependencies": {
         "@hookform/resolvers": "^3.3.1",
@@ -81,6 +82,7 @@
         "prettier-plugin-organize-imports": "^3.2.3",
         "prettier-plugin-tailwindcss": "^0.5.4",
         "prop-types": "^15.8.1",
+        "start-server-and-test": "^2.0.3",
         "storybook": "^7.6.8",
         "tailwindcss": "^3.3.3",
         "vite": "^4.4.5",
