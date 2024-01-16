@@ -24,7 +24,6 @@ const schema = yup.object().shape({
 function Login() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const formMethods = useForm({
@@ -40,19 +39,22 @@ function Login() {
 
     const { control, formState, handleSubmit } = formMethods;
 
-    const { errors } = formState;
+    const { errors, isSubmitting } = formState;
 
     const handleSave = handleSubmit(async (formData) => {
-        setLoading(true);
-        const payload = {
-            email: formData.email,
-            password: formData.password,
-        };
-        const response = await dispatch(asyncSetAuthUser(payload));
-        if (response) {
-            navigate('/', { replace: true });
+        try {
+            const payload = {
+                email: formData.email,
+                password: formData.password,
+            };
+            const response = await dispatch(asyncSetAuthUser(payload));
+            if (response) {
+                return navigate('/', { replace: true });
+            }
+            return false;
+        } catch (error) {
+            return error;
         }
-        setLoading(false);
     });
 
     return (
@@ -90,6 +92,7 @@ function Login() {
                 <Typography variant="heading1">Login</Typography>
                 <FormProvider {...formMethods}>
                     <form
+                        id="form"
                         onSubmit={handleSave}
                         className="flex flex-col w-full gap-4 mt-14"
                     >
@@ -180,8 +183,12 @@ function Login() {
                             }}
                         />
 
-                        <Button disabled={loading} className="my-10">
-                            {loading ? 'Processing' : 'Submit'}
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="my-10"
+                        >
+                            {isSubmitting ? 'Processing' : 'Login'}
                         </Button>
                     </form>
                 </FormProvider>

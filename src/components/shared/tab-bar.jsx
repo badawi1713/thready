@@ -83,13 +83,17 @@ function TabBar() {
                         handleAction={handleLogout}
                         actionVariant="destructive"
                     >
-                        <button className="flex flex-col items-center py-3">
+                        <button
+                            aria-label="logout"
+                            className="flex flex-col items-center py-3"
+                        >
                             <HiOutlineLogout size={24} />
                             <Typography variant="caption">Logout</Typography>
                         </button>
                     </Confirmation>
                 ) : (
                     <Link
+                        aria-label="login"
                         to="/login"
                         className="flex flex-col items-center py-3"
                     >

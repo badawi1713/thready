@@ -3,8 +3,14 @@ module.exports = {
         browser: true,
         es2021: true,
         node: true,
+        'cypress/globals': true,
     },
-    extends: ['airbnb', 'plugin:react/recommended', 'plugin:prettier/recommended', 'plugin:storybook/recommended'],
+    extends: [
+        'airbnb',
+        'plugin:react/recommended',
+        'plugin:prettier/recommended',
+        'plugin:storybook/recommended',
+    ],
     settings: {
         'import/resolver': {
             alias: [['@', './src']],
@@ -26,7 +32,7 @@ module.exports = {
         ecmaVersion: 'latest',
         sourceType: 'module',
     },
-    plugins: ['react', 'react-hooks', 'prettier'],
+    plugins: ['react', 'react-hooks', 'prettier', 'cypress'],
     rules: {
         'react/react-in-jsx-scope': 'off',
         'import/no-extraneous-dependencies': 'off',

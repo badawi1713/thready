@@ -14,6 +14,10 @@ import {
     getThreadsActionCreator,
     getThreadsErrorActionCreator,
 } from './action';
+import {
+    asyncGetCategoryListActionHandler,
+    getCategoryListActionCreator,
+} from '../category-list-reducer/action';
 
 const fakeThreadsResponse = [
     {
@@ -70,6 +74,8 @@ describe('asyncGetAllThreads thunk', () => {
         await asyncGetAllThreads()(dispatch);
         const threads = fakeThreadsResponse;
         const users = fakeUsersResponse;
+        const categories = threads?.data?.map(({ category }) => category);
+        const threadCategoryList = [...new Set(categories)];
         const populateThreadAndUser =
             threads?.length > 0
                 ? threads?.data?.map((thread) => {
@@ -83,9 +89,14 @@ describe('asyncGetAllThreads thunk', () => {
                   })
                 : [];
 
+        await asyncGetCategoryListActionHandler(threadCategoryList)(dispatch);
+
         // assert
         expect(dispatch).toHaveBeenCalledWith(
             getThreadsActionCreator(populateThreadAndUser)
+        );
+        expect(dispatch).toHaveBeenCalledWith(
+            getCategoryListActionCreator(populateThreadAndUser)
         );
     });
 

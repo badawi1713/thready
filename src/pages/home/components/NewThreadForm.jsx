@@ -167,10 +167,11 @@ function NewThreadForm() {
                                 }}
                             />
                             <Button
+                                type="submit"
                                 disabled={isSubmitting}
                                 className="self-end"
                             >
-                                {isSubmitting ? 'Posting' : 'Post'}
+                                Post
                             </Button>
                         </form>
                     </FormProvider>

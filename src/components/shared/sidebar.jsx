@@ -150,7 +150,7 @@ function Sidebar() {
                                 handleAction={handleLogout}
                                 actionVariant="destructive"
                             >
-                                <button className="mt-auto">
+                                <button aria-label="logout" className="mt-auto">
                                     <div className="h-10 w-10 mx-auto rounded-sm aspect-square flex justify-start items-center mt-auto">
                                         <HiOutlineLogout size={32} />
                                     </div>
@@ -162,7 +162,11 @@ function Sidebar() {
                 ) : (
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Link to="/login" className="mt-auto">
+                            <Link
+                                aria-label="login"
+                                to="/login"
+                                className="mt-auto"
+                            >
                                 <div className="h-10 w-10 mx-auto rounded-sm aspect-square flex justify-start items-center mt-auto">
                                     <HiOutlineLogin size={32} />
                                 </div>

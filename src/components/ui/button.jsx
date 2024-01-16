@@ -39,6 +39,7 @@ const Button = React.forwardRef(
         const Comp = asChild ? Slot : 'button';
         return (
             <Comp
+                role="button"
                 ref={ref}
                 {...props}
                 className={cn(buttonVariants({ variant, size, className }))}
