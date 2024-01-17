@@ -1,47 +1,26 @@
 import Sidebar from '@/components/shared/sidebar.jsx';
 import TabBar from '@/components/shared/tab-bar.jsx';
 import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-    Badge,
     Button,
     Card,
     CardContent,
-    CardFooter,
     CardHeader,
     CardTitle,
     Spinner,
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
     Typography,
     badgeVariants,
 } from '@/components/ui';
 import useScreenSize from '@/hooks/useScreenSize';
-import { toast } from '@/hooks/useToast';
-import { formatDateTime, getInitials, postedAt, screens } from '@/lib/utils';
-import {
-    asycnThreadsDownVote,
-    asycnThreadsNeutralVote,
-    asycnThreadsUpVote,
-    asyncGetAllThreads,
-} from '@/store/reducers/all-thread-reducer/action';
-import parse from 'html-react-parser';
+import { screens } from '@/lib/utils';
+import { asyncGetAllThreads } from '@/store/reducers/all-thread-reducer/action';
 import { memo, useCallback, useEffect, useRef } from 'react';
-import {
-    HiArrowLeft,
-    HiHashtag,
-    HiOutlineCalendar,
-    HiOutlineChat,
-    HiOutlineThumbDown,
-    HiOutlineThumbUp,
-    HiThumbDown,
-    HiThumbUp,
-} from 'react-icons/hi';
+import { HiArrowLeft, HiHashtag } from 'react-icons/hi';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import NewThreadForm from './components/NewThreadForm';
+import Profile from './components/Profile';
+import ThreadList from './components/ThreadList';
+import Trending from './components/Trending';
 
 function Home() {
     const isMounted = useRef(true);
@@ -63,16 +42,6 @@ function Home() {
     const filteredThreads = categoryParams
         ? threads?.filter((thread) => thread?.category === categoryParams)
         : threads;
-
-    const isUpVoted = useCallback(
-        (upVotes = []) => upVotes?.includes(authUser?.id),
-        [authUser?.id]
-    );
-
-    const isDownVoted = useCallback(
-        (downVotes = []) => downVotes?.includes(authUser?.id),
-        [authUser?.id]
-    );
 
     const handleNavigate = (url) => {
         navigation(url);
@@ -191,182 +160,7 @@ function Home() {
                         </Typography>
                     </section>
                 ) : (
-                    <section className="py-6 px-8 flex flex-col gap-10 mb-6">
-                        {filteredThreads?.map((thread) => {
-                            const downVotes = thread.downVotesBy.length || 0;
-                            const upVotes = thread.upVotesBy.length || 0;
-                            return (
-                                <Card key={thread?.id}>
-                                    <CardHeader>
-                                        <Link to={`/thread/${thread?.id}`}>
-                                            <CardTitle>
-                                                {thread?.title}
-                                            </CardTitle>
-                                        </Link>
-                                        <div className="flex items-center gap-3 flex-wrap">
-                                            <Typography variant="label">
-                                                {thread?.ownerId}
-                                            </Typography>
-                                            •
-                                            <div className="flex items-center gap-1.5">
-                                                <HiOutlineCalendar />
-                                                <Tooltip>
-                                                    <TooltipTrigger>
-                                                        <Typography variant="label">
-                                                            {postedAt(
-                                                                thread?.createdAt
-                                                            )}
-                                                        </Typography>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        {formatDateTime(
-                                                            thread.createdAt
-                                                        )}
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            </div>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="line-clamp-4">
-                                            {parse(thread?.body)}
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <div className="flex items-center w-full justify-between flex-wrap gap-3">
-                                            <section className="flex items-center gap-3">
-                                                <button
-                                                    onClick={() => {
-                                                        const alreadyUpVoted =
-                                                            isUpVoted(
-                                                                thread?.upVotesBy
-                                                            );
-                                                        if (!authUser) {
-                                                            return toast({
-                                                                title: 'Cannot do that',
-                                                                description:
-                                                                    'You must login first to vote this thread',
-                                                                variant:
-                                                                    'destructive',
-                                                            });
-                                                        }
-                                                        if (alreadyUpVoted) {
-                                                            return dispatch(
-                                                                asycnThreadsNeutralVote(
-                                                                    {
-                                                                        threadId:
-                                                                            thread.id,
-                                                                    }
-                                                                )
-                                                            );
-                                                        }
-                                                        return dispatch(
-                                                            asycnThreadsUpVote({
-                                                                threadId:
-                                                                    thread?.id,
-                                                            })
-                                                        );
-                                                    }}
-                                                    className="flex items-center gap-1.5 text-green-600"
-                                                >
-                                                    {isUpVoted(
-                                                        thread?.upVotesBy
-                                                    ) ? (
-                                                        <HiThumbUp size={18} />
-                                                    ) : (
-                                                        <HiOutlineThumbUp
-                                                            size={18}
-                                                        />
-                                                    )}
-
-                                                    <Typography variant="label">
-                                                        {upVotes}
-                                                    </Typography>
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        const alreadyDownVoted =
-                                                            isDownVoted(
-                                                                thread?.downVotesBy
-                                                            );
-                                                        if (!authUser) {
-                                                            return toast({
-                                                                title: 'Cannot do that',
-                                                                description:
-                                                                    'You must login first to vote this thread',
-                                                                variant:
-                                                                    'destructive',
-                                                            });
-                                                        }
-                                                        if (alreadyDownVoted) {
-                                                            return dispatch(
-                                                                asycnThreadsNeutralVote(
-                                                                    {
-                                                                        threadId:
-                                                                            thread.id,
-                                                                    }
-                                                                )
-                                                            );
-                                                        }
-                                                        return dispatch(
-                                                            asycnThreadsDownVote(
-                                                                {
-                                                                    threadId:
-                                                                        thread?.id,
-                                                                }
-                                                            )
-                                                        );
-                                                    }}
-                                                    className="flex items-center gap-1.5 text-red-600"
-                                                >
-                                                    {isDownVoted(
-                                                        thread?.downVotesBy
-                                                    ) ? (
-                                                        <HiThumbDown
-                                                            size={18}
-                                                        />
-                                                    ) : (
-                                                        <HiOutlineThumbDown
-                                                            size={18}
-                                                        />
-                                                    )}
-
-                                                    <Typography variant="label">
-                                                        {downVotes}
-                                                    </Typography>
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        handleNavigate(
-                                                            `/thread/${thread?.id}`
-                                                        )
-                                                    }
-                                                    className="flex items-center gap-1.5"
-                                                >
-                                                    <HiOutlineChat size={18} />
-                                                    <Typography variant="label">
-                                                        {thread?.totalComments ||
-                                                            0}
-                                                    </Typography>
-                                                </button>
-                                            </section>
-                                            {thread?.category && (
-                                                <section className="flex items-center gap-3">
-                                                    <Link
-                                                        to={`/?category=${thread?.category}`}
-                                                    >
-                                                        <Badge variant="outline">
-                                                            #{thread?.category}
-                                                        </Badge>
-                                                    </Link>
-                                                </section>
-                                            )}
-                                        </div>
-                                    </CardFooter>
-                                </Card>
-                            );
-                        })}
-                    </section>
+                    <ThreadList />
                 )}
             </main>
             <aside className="border-l py-6 px-8 lg:block hidden sticky top-0 min-h-full max-h-[100dvh] w-full max-w-sm">
@@ -375,95 +169,9 @@ function Home() {
                         <div className="rounded-sm dark:bg-slate-800 bg-slate-100 h-40 w-12 lg:w-80" />
                     ) : (
                         <>
-                            {authUser && (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="font-normal">
-                                            Profile
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="flex items-center justify-between space-x-4">
-                                            <div className="flex items-center space-x-4">
-                                                <Avatar>
-                                                    <AvatarImage
-                                                        src={authUser?.avatar}
-                                                    />
-                                                    <AvatarFallback>
-                                                        {getInitials(
-                                                            authUser?.name
-                                                        )}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <div>
-                                                    <p className="text-sm font-medium uppercase leading-none">
-                                                        {authUser?.name ||
-                                                            'Unknown'}
-                                                    </p>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {authUser?.email ||
-                                                            'Email is unavailable'}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            )}
+                            {authUser && <Profile />}
 
-                            {!loading && !error && (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-1 font-normal">
-                                            <HiHashtag /> Trending
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                            {categoryList?.length < 1 ? (
-                                                <Typography
-                                                    variant="body1"
-                                                    className=" text-primary text-center"
-                                                >
-                                                    Sorry, there is no something
-                                                    trending right now!
-                                                </Typography>
-                                            ) : (
-                                                categoryList?.map(
-                                                    (category) => {
-                                                        return (
-                                                            <button
-                                                                key={category}
-                                                                onClick={() => {
-                                                                    const url =
-                                                                        categoryParams ===
-                                                                        category
-                                                                            ? '/'
-                                                                            : `/?category=${category}`;
-                                                                    handleNavigate(
-                                                                        url
-                                                                    );
-                                                                }}
-                                                                className={badgeVariants(
-                                                                    {
-                                                                        variant:
-                                                                            categoryParams ===
-                                                                            category
-                                                                                ? 'default'
-                                                                                : 'outline',
-                                                                    }
-                                                                )}
-                                                            >
-                                                                #{category}
-                                                            </button>
-                                                        );
-                                                    }
-                                                )
-                                            )}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            )}
+                            {!loading && !error && <Trending />}
                         </>
                     )}
                 </div>
