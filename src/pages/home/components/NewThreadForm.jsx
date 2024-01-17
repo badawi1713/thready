@@ -91,7 +91,7 @@ function NewThreadForm() {
                                     return (
                                         <div className="flex flex-col w-full gap-2">
                                             <Label htmlFor="title">
-                                                Thread Title
+                                                Thread Titles
                                             </Label>
                                             <Input
                                                 {...field}
