@@ -1,8 +1,21 @@
-# React + Vite
+# Getting started
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Hi, this is my repository for React expert's submission by Dicoding, using Vite setup.
 
-Currently, two official plugins are available:
+Let's get started with Thready:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- npm install
+- npm run dev
+- open http://localhost:5173
+
+To test the app:
+
+- npm run ci:test
+
+I am also using some features from React Ecosystem like:
+
+- [Storybook](https://github.com/storybookjs/storybook)
+- [React-Hook-Form](https://react-hook-form.com/)
+- [ShadcnUI](https://ui.shadcn.com/docs)
+
+By [Dzaky Badawi](https://dbadawi.site/)
